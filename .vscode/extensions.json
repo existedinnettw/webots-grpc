@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "morningfrog.urdf-visualizer",
-        "yzhang.markdown-all-in-one"
+        "yzhang.markdown-all-in-one",
+        "smilerobotics.urdf"
     ]
 }

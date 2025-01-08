@@ -24,15 +24,17 @@
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <mass value="1" />
-      <inertia ixx="0.16666666666666666" ixy="0" ixz="0" iyy="0.16666666666666666" iyz="0" izz="0.16666666666666666" />
+      <inertia ixx="0.16666666666666666" ixy="0" ixz="0" iyy="0.16666666666666666" iyz="0"
+        izz="0.16666666666666666" />
     </inertial>
   </link>
   <joint name="base_link_to_link2" type="prismatic">
     <parent link="base_link" />
     <child link="link2" />
     <origin xyz="0.47820843687512327 -0.7 0.16" rpy="0 0 0" />
-    <axis xyz="-0.007463304674520997 0.9999698467567142 0.0021458473125477297"/>
-    <limit effort="1000.0" lower="0" upper="1.3" velocity="0.5"/>  </joint>
+    <axis xyz="-0.007463304674520997 0.9999698467567142 0.0021458473125477297" />
+    <limit effort="1000.0" lower="0" upper="1.3" velocity="1.2" />
+  </joint>
   <link name="link2">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
@@ -52,15 +54,17 @@
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <mass value="1" />
-      <inertia ixx="0.16666666666666666" ixy="0" ixz="0" iyy="0.16666666666666666" iyz="0" izz="0.16666666666666666" />
+      <inertia ixx="0.16666666666666666" ixy="0" ixz="0" iyy="0.16666666666666666" iyz="0"
+        izz="0.16666666666666666" />
     </inertial>
   </link>
   <joint name="link2_to_link3_1" type="prismatic">
     <parent link="link2" />
     <child link="link3_1" />
-    <origin xyz="0.5 0.08 0" rpy="0 0 0" />
-    <axis xyz="-0.9999955995433731 0.002966618003841546 -0.000008456311998861208"/>
-    <limit effort="1000.0" lower="0" upper="0.8" velocity="0.5"/>  </joint>
+    <origin xyz="0.40 0.08 0" rpy="0 0 0" />
+    <axis xyz="-1 0 0" />
+    <limit effort="1000.0" lower="0" upper="0.7" velocity="1.2" />
+  </joint>
   <link name="link3_1">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
@@ -80,15 +84,17 @@
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <mass value="1" />
-      <inertia ixx="0.16666666666666666" ixy="0" ixz="0" iyy="0.16666666666666666" iyz="0" izz="0.16666666666666666" />
+      <inertia ixx="0.16666666666666666" ixy="0" ixz="0" iyy="0.16666666666666666" iyz="0"
+        izz="0.16666666666666666" />
     </inertial>
   </link>
   <joint name="link3_1_to_link4_1" type="prismatic">
     <parent link="link3_1" />
     <child link="link4_1" />
     <origin xyz="0.001791563124876716 0.050000000000000044 0.33999999999999997" rpy="0 0 0" />
-    <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-0.7" upper="0" velocity="0.5"/>  </joint>
+    <axis xyz="0 0 1" />
+    <limit effort="1000.0" lower="-0.9" upper="0" velocity="1.2" />
+  </joint>
   <link name="link4_1">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
@@ -108,7 +114,8 @@
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <mass value="1" />
-      <inertia ixx="0.16666666666666666" ixy="0" ixz="0" iyy="0.16666666666666666" iyz="0" izz="0.16666666666666666" />
+      <inertia ixx="0.16666666666666666" ixy="0" ixz="0" iyy="0.16666666666666666" iyz="0"
+        izz="0.16666666666666666" />
     </inertial>
   </link>
 </robot>
