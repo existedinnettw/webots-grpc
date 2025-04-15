@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package webots;
+
+service RobotService {
+    rpc GetRobotName(Empty) returns (RobotNameResponse);
+    rpc GetRobotModel(Empty) returns (RobotModelResponse);
+    rpc GetCustomData(Empty) returns (CustomDataResponse);
+    rpc SetCustomData(CustomDataRequest) returns (Empty);
+    rpc GetDeviceList(Empty) returns (DeviceListResponse);
+    rpc GetDevice(DeviceRequest) returns (DeviceResponse);
+    rpc Step(StepRequest) returns (StepResponse);
+}
+
+message Empty {}
+
+message RobotNameResponse {
+    string name = 1;
+}
+
+message RobotModelResponse {
+    string model = 1;
+}
+
+message CustomDataRequest {
+    string data = 1;
+}
+
+message CustomDataResponse {
+    string data = 1;
+}
+
+message DeviceRequest {
+    string name = 1;
+}
+
+message DeviceResponse {
+    string name = 1;
+    string model = 2;
+    int32 node_type = 3;
+}
+
+message DeviceListResponse {
+    repeated DeviceResponse devices = 1;
+}
+
+message StepRequest {
+    int32 time_step = 1;
+}
+
+message StepResponse {
+    bool success = 1;
+}

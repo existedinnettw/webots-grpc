@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package webots;
+
+service MotorService {
+    rpc SetPosition(SetPositionRequest) returns (SetPositionResponse);
+    rpc GetPosition(GetPositionRequest) returns (GetPositionResponse);
+    rpc SetVelocity(SetVelocityRequest) returns (SetVelocityResponse);
+    rpc GetVelocity(GetVelocityRequest) returns (GetVelocityResponse);
+    rpc SetTorque(SetTorqueRequest) returns (SetTorqueResponse);
+    rpc GetTorque(GetTorqueRequest) returns (GetTorqueResponse);
+}
+
+message SetPositionRequest {
+    string motor_name = 1;
+    float position = 2;
+}
+
+message SetPositionResponse {
+    bool success = 1;
+}
+
+message GetPositionRequest {
+    string motor_name = 1;
+}
+
+message GetPositionResponse {
+    float position = 1;
+}
+
+message SetVelocityRequest {
+    string motor_name = 1;
+    float velocity = 2;
+}
+
+message SetVelocityResponse {
+    bool success = 1;
+}
+
+message GetVelocityRequest {
+    string motor_name = 1;
+}
+
+message GetVelocityResponse {
+    float velocity = 1;
+}
+
+message SetTorqueRequest {
+    string motor_name = 1;
+    float torque = 2;
+}
+
+message SetTorqueResponse {
+    bool success = 1;
+}
+
+message GetTorqueRequest {
+    string motor_name = 1;
+}
+
+message GetTorqueResponse {
+    float torque = 1;
+}

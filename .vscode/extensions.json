@@ -2,6 +2,7 @@
     "recommendations": [
         "morningfrog.urdf-visualizer",
         "yzhang.markdown-all-in-one",
-        "smilerobotics.urdf"
+        "smilerobotics.urdf",
+        "tamasfe.even-better-toml"
     ]
 }

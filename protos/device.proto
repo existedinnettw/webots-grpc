@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package device;
+
+service DeviceService {
+    rpc GetDeviceName(DeviceRequest) returns (DeviceResponse);
+    rpc GetDeviceModel(DeviceRequest) returns (DeviceResponse);
+    rpc GetNodeType(DeviceRequest) returns (NodeTypeResponse);
+}
+
+message DeviceRequest {
+    string name = 1;
+}
+
+message DeviceResponse {
+    string name = 1;
+    string model = 2;
+}
+
+message NodeTypeResponse {
+    int32 node_type = 1;
+}
