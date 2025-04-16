@@ -7,7 +7,13 @@ import generated.motor_pb2_grpc as motor_pb2_grpc
 
 
 class MotorService(motor_pb2_grpc.MotorServiceServicer):
-    def __init__(self, robot):
+    """
+    gRPC service for controlling motors in Webots.
+    It is designed as a wrapper around Webots `controller.motor.Motor`.
+    This service provides methods to set and get motor positions, velocities, and torques.
+    """
+
+    def __init__(self, robot: Robot):
         self.robot = robot
 
     def _get_motor(self, motor_name, context):
@@ -57,3 +63,40 @@ class MotorService(motor_pb2_grpc.MotorServiceServicer):
             return motor_pb2.GetTorqueResponse(torque=0.0)
         return motor_pb2.GetTorqueResponse(torque=motor.getTorqueFeedback())
 
+    def GetMinPosition(self, request, context):
+        motor = self._get_motor(request.motor_name, context)
+        if motor is None:
+            return motor_pb2.GetMinPositionResponse(min_position=0.0)
+        return motor_pb2.GetMinPositionResponse(min_position=motor.getMinPosition())
+
+    def GetMaxPosition(self, request, context):
+        motor = self._get_motor(request.motor_name, context)
+        if motor is None:
+            return motor_pb2.GetMaxPositionResponse(max_position=0.0)
+        return motor_pb2.GetMaxPositionResponse(max_position=motor.getMaxPosition())
+
+    def SetControlPID(self, request, context):
+        motor = self._get_motor(request.motor_name, context)
+        if motor is None:
+            return motor_pb2.SetControlPIDResponse(success=False)
+        motor.setControlPID(request.p, request.i, request.d)
+        return motor_pb2.SetControlPIDResponse(success=True)
+
+    def GetTargetPosition(self, request, context):
+        motor = self._get_motor(request.motor_name, context)
+        if motor is None:
+            return motor_pb2.GetTargetPositionResponse(target_position=0.0)
+        return motor_pb2.GetTargetPositionResponse(
+            target_position=motor.getTargetPosition()
+        )
+
+    def GetPositionSensor(self, request, context):
+        motor = self._get_motor(request.motor_name, context)
+        if motor is None:
+            return motor_pb2.GetPositionSensorResponse(position_sensor_name="")
+        position_sensor = motor.getPositionSensor()
+        if position_sensor is None:
+            return motor_pb2.GetPositionSensorResponse(position_sensor_name="")
+        return motor_pb2.GetPositionSensorResponse(
+            position_sensor_name=position_sensor.getName()
+        )

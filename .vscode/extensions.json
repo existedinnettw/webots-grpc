@@ -3,6 +3,7 @@
         "morningfrog.urdf-visualizer",
         "yzhang.markdown-all-in-one",
         "smilerobotics.urdf",
-        "tamasfe.even-better-toml"
+        "tamasfe.even-better-toml",
+        "tooltitudeteam.tooltitude-pb"
     ]
 }

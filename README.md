@@ -1,4 +1,4 @@
-# webots mqtt
+# webots-grpc
 
 This project is a simple gateway convert from mqtt message to webots socket IPC API. It follow some rules.
 
@@ -12,7 +12,7 @@ If you have no robot description file, `descriptions` folder offer some basic on
 ## build
 
 ```bash
-poetry run python -m grpc_tools.protoc -I ./protos --python_out=./generated --grpc_python_out=./generated ./protos/*.proto
+poetry run python -m grpc_tools.protoc -I ./protos --python_out=./generated --pyi_out=./generated --grpc_python_out=./generated ./protos/*.proto
 ```
 
 `grpcurl -plaintext localhost:50051 list`
@@ -24,6 +24,14 @@ If you use MSYS2 [as state](https://cyberbotics.com/doc/guide/compiling-controll
 
 > I don't find out way to integrate `WEBOTS_HOME` yet
 
+Or using poetry directly config python path,
+
+```ini
+; .env
+PYTHONPATH=C:\Program Files\Webots\lib\controller\python
+```
+
+
 [extern controller](https://cyberbotics.com/doc/guide/running-extern-robot-controllers#launcher), e.g. 
 
 `& "C:\Program Files\Webots\msys64\mingw64\bin\webots-controller.exe" --help`
@@ -33,3 +41,5 @@ If you use MSYS2 [as state](https://cyberbotics.com/doc/guide/compiling-controll
 `& "C:\Program Files\Webots\msys64\mingw64\bin\webots-controller.exe" --robot-name='Picker' picker_cntrl_gateway.py`
 
 `poetry run "C:\Program Files\Webots\msys64\mingw64\bin\webots-controller.exe" --robot-name='Picker' .\webots_grpc\server.py`
+
+`poetry run python -m tests.client`

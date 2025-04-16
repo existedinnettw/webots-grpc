@@ -7,7 +7,7 @@ import generated.device_pb2_grpc as device_pb2_grpc
 
 
 class DeviceService(device_pb2_grpc.DeviceServiceServicer):
-    def __init__(self, robot):
+    def __init__(self, robot: Robot):
         self.robot = robot
 
     def GetDeviceInfo(self, request, context):
@@ -23,4 +23,3 @@ class DeviceService(device_pb2_grpc.DeviceServiceServicer):
                 node_type=device.getNodeType(),
             )
         )
-

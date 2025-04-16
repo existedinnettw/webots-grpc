@@ -2,62 +2,117 @@ syntax = "proto3";
 
 package webots;
 
+import "device.proto";
+
 service MotorService {
-    rpc SetPosition(SetPositionRequest) returns (SetPositionResponse);
-    rpc GetPosition(GetPositionRequest) returns (GetPositionResponse);
-    rpc SetVelocity(SetVelocityRequest) returns (SetVelocityResponse);
-    rpc GetVelocity(GetVelocityRequest) returns (GetVelocityResponse);
-    rpc SetTorque(SetTorqueRequest) returns (SetTorqueResponse);
-    rpc GetTorque(GetTorqueRequest) returns (GetTorqueResponse);
+  rpc SetPosition(SetPositionRequest) returns (SetPositionResponse);
+  rpc GetPosition(GetPositionRequest) returns (GetPositionResponse);
+  rpc SetVelocity(SetVelocityRequest) returns (SetVelocityResponse);
+  rpc GetVelocity(GetVelocityRequest) returns (GetVelocityResponse);
+  rpc SetTorque(SetTorqueRequest) returns (SetTorqueResponse);
+  rpc GetTorque(GetTorqueRequest) returns (GetTorqueResponse);
+  rpc GetMinPosition(GetMinPositionRequest) returns (GetMinPositionResponse);
+  rpc GetMaxPosition(GetMaxPositionRequest) returns (GetMaxPositionResponse);
+  rpc SetControlPID(SetControlPIDRequest) returns (SetControlPIDResponse);
+  rpc GetTargetPosition(GetTargetPositionRequest) returns (GetTargetPositionResponse);
+  rpc GetPositionSensor(GetPositionSensorRequest) returns (GetPositionSensorResponse);
+}
+
+// @see `controller.motor.Motor`
+message Motor {
+  device.Device device = 1;// Reuse the Device message
 }
 
 message SetPositionRequest {
-    string motor_name = 1;
-    float position = 2;
+  string motor_name = 1;
+  float position = 2;
 }
 
 message SetPositionResponse {
-    bool success = 1;
+  bool success = 1;
 }
 
 message GetPositionRequest {
-    string motor_name = 1;
+  string motor_name = 1;
 }
 
 message GetPositionResponse {
-    float position = 1;
+  float position = 1;
 }
 
 message SetVelocityRequest {
-    string motor_name = 1;
-    float velocity = 2;
+  string motor_name = 1;
+  float velocity = 2;
 }
 
 message SetVelocityResponse {
-    bool success = 1;
+  bool success = 1;
 }
 
 message GetVelocityRequest {
-    string motor_name = 1;
+  string motor_name = 1;
 }
 
 message GetVelocityResponse {
-    float velocity = 1;
+  float velocity = 1;
 }
 
 message SetTorqueRequest {
-    string motor_name = 1;
-    float torque = 2;
+  string motor_name = 1;
+  float torque = 2;
 }
 
 message SetTorqueResponse {
-    bool success = 1;
+  bool success = 1;
 }
 
 message GetTorqueRequest {
-    string motor_name = 1;
+  string motor_name = 1;
 }
 
 message GetTorqueResponse {
-    float torque = 1;
+  float torque = 1;
+}
+
+message GetMinPositionRequest {
+  string motor_name = 1;
+}
+
+message GetMinPositionResponse {
+  float min_position = 1;
+}
+
+message GetMaxPositionRequest {
+  string motor_name = 1;
+}
+
+message GetMaxPositionResponse {
+  float max_position = 1;
+}
+
+message SetControlPIDRequest {
+  string motor_name = 1;
+  float p = 2;
+  float i = 3;
+  float d = 4;
+}
+
+message SetControlPIDResponse {
+  bool success = 1;
+}
+
+message GetTargetPositionRequest {
+  string motor_name = 1;
+}
+
+message GetTargetPositionResponse {
+  float target_position = 1;
+}
+
+message GetPositionSensorRequest {
+  string motor_name = 1;
+}
+
+message GetPositionSensorResponse {
+  string position_sensor_name = 1;
 }

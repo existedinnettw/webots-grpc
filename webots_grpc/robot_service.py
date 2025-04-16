@@ -6,7 +6,7 @@ import generated.robot_pb2_grpc as robot_pb2_grpc
 
 
 class RobotService(robot_pb2_grpc.RobotServiceServicer):
-    def __init__(self, robot):
+    def __init__(self, robot: Robot):
         self.robot = robot
 
     def GetRobotName(self, request, context):
@@ -46,6 +46,19 @@ class RobotService(robot_pb2_grpc.RobotServiceServicer):
         )
 
     def Step(self, request, context):
+        """
+
+        ref
+        ---
+        A controller cannot prevent its own termination.
+        When one of the above events happens, the wb_robot_step function returns -1.
+        From this point, Webots will not communicate with the controller any more.
+        Therefore, new print statements executed by the controller on stdout or stderr
+        will no longer appear in the Webots console.
+        After one second (real time), if the controller has not terminated by itself,
+        Webots will kill it (SIGKILL). That leaves a limited amount of time to the
+        controller to save important data, close files, etc. before it is actually killed
+          by Webots. Here is an example that shows how to save data before the upcoming termination:
+        """
         success = self.robot.step(request.time_step) != -1
         return robot_pb2.StepResponse(success=success)
-

@@ -1,8 +1,12 @@
 import sys
 import os
+import time
+
+# import subprocess
+from multiprocessing import Process
 
 # grpcio-tools.protoc python import paths should be relative to a specified root directory #29459
-sys.path.append(os.path.join(os.path.dirname(__file__), '../generated'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../generated"))
 import grpc
 from concurrent import futures
 from grpc_reflection.v1alpha import reflection
@@ -22,6 +26,7 @@ import generated.motor_pb2 as motor_pb2
 import generated.device_pb2 as device_pb2
 
 from controller.robot import Robot
+
 
 def serve():
     # Create a single Robot instance
@@ -51,5 +56,24 @@ def serve():
     server.start()
     server.wait_for_termination()
 
+
+def watchdog():
+    """Parent process that monitors and restarts the gRPC server subprocess."""
+    while True:
+        print("Starting gRPC server subprocess...")
+        p = Process(target=serve)
+        p.start()
+        result = p.join()
+
+        if result == 0:
+            print("gRPC server subprocess exited normally.")
+            break
+        else:
+            print(
+                f"gRPC server subprocess crashed with return code {result}. Restarting..."
+            )
+            time.sleep(2)  # Optional: Add a delay before restarting
+
+
 if __name__ == "__main__":
-    serve()
+    watchdog()

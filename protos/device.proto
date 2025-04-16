@@ -2,6 +2,12 @@ syntax = "proto3";
 
 package device;
 
+message Device {
+    string name = 1;
+    string model = 2;
+    int32 node_type = 3;
+}
+
 service DeviceService {
     rpc GetDeviceName(DeviceRequest) returns (DeviceResponse);
     rpc GetDeviceModel(DeviceRequest) returns (DeviceResponse);
