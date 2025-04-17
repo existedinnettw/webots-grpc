@@ -4,6 +4,11 @@
         "yzhang.markdown-all-in-one",
         "smilerobotics.urdf",
         "tamasfe.even-better-toml",
-        "tooltitudeteam.tooltitude-pb"
+        "tooltitudeteam.tooltitude-pb",
+        "ms-vscode.cpptools-extension-pack",
+        "cheshirekow.cmake-format",
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "ms-vscode.cmake-tools"
     ]
 }

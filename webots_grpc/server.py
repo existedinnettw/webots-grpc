@@ -1,5 +1,5 @@
-import sys
 import os
+import sys
 import time
 
 # import subprocess
@@ -7,25 +7,25 @@ from multiprocessing import Process
 
 # grpcio-tools.protoc python import paths should be relative to a specified root directory #29459
 sys.path.append(os.path.join(os.path.dirname(__file__), "../generated"))
-import grpc
 from concurrent import futures
+
+import grpc
+from controller.robot import Robot
 from grpc_reflection.v1alpha import reflection
 
-# Import the service implementations
-from webots_grpc.robot_service import RobotService
-from webots_grpc.motor_service import MotorService
-from webots_grpc.device_service import DeviceService
+import generated.device_pb2 as device_pb2
+import generated.device_pb2_grpc as device_pb2_grpc
+import generated.motor_pb2 as motor_pb2
+import generated.motor_pb2_grpc as motor_pb2_grpc
+import generated.robot_pb2 as robot_pb2
 
 # Import the generated gRPC modules
 import generated.robot_pb2_grpc as robot_pb2_grpc
-import generated.motor_pb2_grpc as motor_pb2_grpc
-import generated.device_pb2_grpc as device_pb2_grpc
+from webots_grpc.device_service import DeviceService
+from webots_grpc.motor_service import MotorService
 
-import generated.robot_pb2 as robot_pb2
-import generated.motor_pb2 as motor_pb2
-import generated.device_pb2 as device_pb2
-
-from controller.robot import Robot
+# Import the service implementations
+from webots_grpc.robot_service import RobotService
 
 
 def serve():
@@ -69,9 +69,7 @@ def watchdog():
             print("gRPC server subprocess exited normally.")
             break
         else:
-            print(
-                f"gRPC server subprocess crashed with return code {result}. Restarting..."
-            )
+            print(f"gRPC server subprocess crashed with return code {result}. Restarting...")
             time.sleep(2)  # Optional: Add a delay before restarting
 
 

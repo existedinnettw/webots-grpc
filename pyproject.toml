@@ -15,11 +15,29 @@ pyside6           = "^6.8.0,<6.9.0"
 python            = ">=3.10,<3.14"
 
 [tool.poetry.group.dev.dependencies]
-black        = "^24.4.2"
-flake8       = "^7.1.0"
 grpcio-tools = "^1.71.0"
+ruff         = "^0.11.5"
 urdf2webots  = "^2023.1.0"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
 requires      = ["poetry-core"]
+
+[tool.ruff] # https://docs.astral.sh/ruff/settings/#top-level
+exclude     = ["**/migrations/", "**/manage.py"]
+line-length = 100
+
+[tool.ruff.lint] # https://docs.astral.sh/ruff/settings/#lint
+ignore = [
+    "E402", # module level import not at top of file
+]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "UP", # pyupgrade
+]
+
+[tool.ruff.format] # https://docs.astral.sh/ruff/settings/#format
+quote-style = "double" # 引號風格，雙引號是預設值，這裡只是明示這個設定

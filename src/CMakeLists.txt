@@ -1,0 +1,12 @@
+
+#client
+add_library(webots-grpc-client webots-grpc-client.cpp)
+target_include_directories(webots-grpc-client PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+target_link_libraries(webots-grpc-client
+    PUBLIC
+        webots-grpc-proto
+        gRPC::grpc
+        gRPC::grpc++
+)
+set_target_properties(webots-grpc-client PROPERTIES PUBLIC_HEADER "webots-grpc-client.hpp")
+install(TARGETS webots-grpc-client)

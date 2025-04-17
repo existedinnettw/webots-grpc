@@ -1,7 +1,8 @@
 import grpc
-from concurrent import futures
-from controller.device import Device
+
+# from controller.device import Device
 from controller.robot import Robot
+
 import generated.device_pb2 as device_pb2
 import generated.device_pb2_grpc as device_pb2_grpc
 

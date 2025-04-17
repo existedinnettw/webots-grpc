@@ -1,7 +1,7 @@
 import grpc
-from concurrent import futures
 from controller.motor import Motor
 from controller.robot import Robot
+
 import generated.motor_pb2 as motor_pb2
 import generated.motor_pb2_grpc as motor_pb2_grpc
 
@@ -86,9 +86,7 @@ class MotorService(motor_pb2_grpc.MotorServiceServicer):
         motor = self._get_motor(request.motor_name, context)
         if motor is None:
             return motor_pb2.GetTargetPositionResponse(target_position=0.0)
-        return motor_pb2.GetTargetPositionResponse(
-            target_position=motor.getTargetPosition()
-        )
+        return motor_pb2.GetTargetPositionResponse(target_position=motor.getTargetPosition())
 
     def GetPositionSensor(self, request, context):
         motor = self._get_motor(request.motor_name, context)
@@ -97,6 +95,4 @@ class MotorService(motor_pb2_grpc.MotorServiceServicer):
         position_sensor = motor.getPositionSensor()
         if position_sensor is None:
             return motor_pb2.GetPositionSensorResponse(position_sensor_name="")
-        return motor_pb2.GetPositionSensorResponse(
-            position_sensor_name=position_sensor.getName()
-        )
+        return motor_pb2.GetPositionSensorResponse(position_sensor_name=position_sensor.getName())
