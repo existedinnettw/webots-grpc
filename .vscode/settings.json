@@ -1,5 +1,14 @@
 {
     "files.eol": "\n",
     "editor.formatOnSave": true,
-    "ruff.lineLength": 100
+    "ruff.lineLength": 100,
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "cmake.configureOnOpen": true,
+    "files.associations": {
+        "*.h": "cpp",
+        "*.hpp": "cpp",
+        "*.cc": "cpp",
+        "*.cpp": "cpp",
+    },
+    "C_Cpp.autoAddFileAssociations": false,
 }

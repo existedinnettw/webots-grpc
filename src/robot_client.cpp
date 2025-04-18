@@ -2,8 +2,8 @@
 #include <google/protobuf/empty.pb.h> // Include the protobuf Empty message
 #include <iostream>
 
-RobotClient::RobotClient()
-  : stub_(webots::RobotService::NewStub(grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials())))
+RobotClient::RobotClient(const std::shared_ptr<grpc::Channel>& channel)
+: stub_(webots::RobotService::NewStub(channel))
 {
 }
 

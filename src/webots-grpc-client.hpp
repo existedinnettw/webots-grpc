@@ -1,35 +1,5 @@
 #pragma once
 
-#include <grpcpp/grpcpp.h>
-#include <robot.grpc.pb.h>
-#include <string>
-#include <vector>
-
-// webots grpc robot client
-class RobotClient
-{
-public:
-  RobotClient();
-  ~RobotClient();
-
-  // Method to get the robot's name
-  std::string GetRobotName();
-
-  // Method to get the robot's model
-  std::string GetRobotModel();
-
-  // Method to get custom data
-  std::string GetCustomData();
-
-  // Method to set custom data
-  bool SetCustomData(const std::string& data);
-
-  // Method to get the list of devices
-  std::vector<std::string> GetDeviceList();
-
-  // Method to perform a simulation step
-  bool Step(int32_t time_step);
-
-private:
-  std::unique_ptr<webots::RobotService::Stub> stub_; // gRPC stub for RobotService
-};
+#include "device_client.hpp"
+#include "motor_client.hpp"
+#include "robot_client.hpp"
