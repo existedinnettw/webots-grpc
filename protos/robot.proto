@@ -2,52 +2,50 @@ syntax = "proto3";
 
 package webots;
 
+
+import "device.proto";
+import "google/protobuf/empty.proto";
+
+/**
+* @see webots/include/controller/cpp/webots/Robot.hpp
+* @see webots/src/controller/cpp/Robot.cpp
+* @see webots/lib/controller/python/controller/robot.py
+*/
+
 service RobotService {
-    rpc GetRobotName(Empty) returns (RobotNameResponse);
-    rpc GetRobotModel(Empty) returns (RobotModelResponse);
-    rpc GetCustomData(Empty) returns (CustomDataResponse);
-    rpc SetCustomData(CustomDataRequest) returns (Empty);
-    rpc GetDeviceList(Empty) returns (DeviceListResponse);
-    rpc GetDevice(DeviceRequest) returns (DeviceResponse);
-    rpc Step(StepRequest) returns (StepResponse);
+  rpc GetRobotName(google.protobuf.Empty) returns (RobotNameResponse);
+  rpc GetRobotModel(google.protobuf.Empty) returns (RobotModelResponse);
+  rpc GetCustomData(google.protobuf.Empty) returns (CustomDataResponse);
+  rpc SetCustomData(CustomDataRequest) returns (google.protobuf.Empty);
+  rpc GetDevice(DeviceRequest) returns (DeviceResponse);
+  rpc GetDeviceList(google.protobuf.Empty) returns (DeviceListResponse);
+  rpc Step(StepRequest) returns (StepResponse);
 }
 
-message Empty {}
-
 message RobotNameResponse {
-    string name = 1;
+  string name = 1;
 }
 
 message RobotModelResponse {
-    string model = 1;
+  string model = 1;
 }
 
 message CustomDataRequest {
-    string data = 1;
+  string data = 1;
 }
 
 message CustomDataResponse {
-    string data = 1;
-}
-
-message DeviceRequest {
-    string name = 1;
-}
-
-message DeviceResponse {
-    string name = 1;
-    string model = 2;
-    int32 node_type = 3;
+  string data = 1;
 }
 
 message DeviceListResponse {
-    repeated DeviceResponse devices = 1;
+  repeated DeviceResponse devices = 1;
 }
 
 message StepRequest {
-    int32 time_step = 1;
+  int32 time_step = 1;
 }
 
 message StepResponse {
-    bool success = 1;
+  bool success = 1;
 }

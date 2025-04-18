@@ -1,28 +1,42 @@
 syntax = "proto3";
 
-package device;
+package webots;
 
-message Device {
-    string name = 1;
-    string model = 2;
-    int32 node_type = 3;
-}
+/**
+* @see webots/include/controller/cpp/webots/Device.hpp
+* @see webots/src/controller/cpp/Device.cpp
+* @see webots/lib/controller/python/controller/device.py
+* @details it has no meaning to get model or node_type if device object had gotten
+* therefore following RPC is not expected to be used
+*/
 
 service DeviceService {
-    rpc GetDeviceName(DeviceRequest) returns (DeviceResponse);
-    rpc GetDeviceModel(DeviceRequest) returns (DeviceResponse);
-    rpc GetNodeType(DeviceRequest) returns (NodeTypeResponse);
+  rpc GetDeviceModel(DeviceRequest) returns (DeviceModelResponse);
+  rpc GetNodeType(DeviceRequest) returns (NodeTypeResponse);
+  rpc GetTag(DeviceRequest) returns (DeviceTagResponse);
 }
 
+/**
+* use device name to replace this/self pointer
+*/
 message DeviceRequest {
-    string name = 1;
+  string name = 1;
 }
 
 message DeviceResponse {
-    string name = 1;
-    string model = 2;
+  string name = 1;
+  string model = 2;
+  int32 node_type = 3;
+}
+
+message DeviceModelResponse {
+  string model = 1;
 }
 
 message NodeTypeResponse {
-    int32 node_type = 1;
+  int32 node_type = 1;
+}
+
+message DeviceTagResponse {
+  int32 tag = 1;
 }

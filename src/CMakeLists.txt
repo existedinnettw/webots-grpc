@@ -10,3 +10,5 @@ target_link_libraries(webots-grpc-client
 )
 set_target_properties(webots-grpc-client PROPERTIES PUBLIC_HEADER "webots-grpc-client.hpp")
 install(TARGETS webots-grpc-client)
+
+add_subdirectory(tests)

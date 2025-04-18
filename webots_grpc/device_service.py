@@ -1,6 +1,4 @@
 import grpc
-
-# from controller.device import Device
 from controller.robot import Robot
 
 import generated.device_pb2 as device_pb2
@@ -12,15 +10,37 @@ class DeviceService(device_pb2_grpc.DeviceServiceServicer):
         self.robot = robot
 
     def GetDeviceInfo(self, request, context):
-        device = self.robot.getDevice(request.device_name)
+        device = self.robot.getDevice(request.name)
         if device is None:
             context.set_code(grpc.StatusCode.NOT_FOUND)
-            context.set_details(f"Device '{request.device_name}' not found.")
+            context.set_details(f"Device '{request.name}' not found.")
             return device_pb2.DeviceResponse()
         return device_pb2.DeviceResponse(
-            device_info=device_pb2.DeviceInfo(
-                name=device.getName(),
-                model=device.getModel(),
-                node_type=device.getNodeType(),
-            )
+            name=device.getName(),
+            model=device.getModel(),
+            node_type=device.getNodeType(),
         )
+
+    def GetDeviceModel(self, request, context):
+        device = self.robot.getDevice(request.name)
+        if device is None:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"Device '{request.name}' not found.")
+            return device_pb2.DeviceModelResponse(model="")
+        return device_pb2.DeviceModelResponse(model=device.getModel())
+
+    def GetNodeType(self, request, context):
+        device = self.robot.getDevice(request.name)
+        if device is None:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"Device '{request.name}' not found.")
+            return device_pb2.NodeTypeResponse(node_type=0)
+        return device_pb2.NodeTypeResponse(node_type=device.getNodeType())
+
+    def GetTag(self, request, context):
+        device = self.robot.getDevice(request.name)
+        if device is None:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"Device '{request.name}' not found.")
+            return device_pb2.DeviceTagResponse(tag=0)
+        return device_pb2.DeviceTagResponse(tag=device.getTag())
