@@ -21,7 +21,7 @@ class webots_grpcRecipe(ConanFile):
     default_options = {"shared": False, "fPIC": True}
 
     # Sources are located in the same place as this recipe, copy them to the recipe
-    exports_sources = "CMakeLists.txt", "src/*", "include/*"
+    exports_sources = "CMakeLists.txt", "src/*", "protos/*"
 
     def validate(self):
         check_min_cppstd(self, "20")  # grpc
@@ -35,7 +35,8 @@ class webots_grpcRecipe(ConanFile):
             self.options.rm_safe("fPIC")
 
     def requirements(self):
-        self.requires("grpc/1.67.1")
+        self.requires("grpc/1.67.1", transitive_headers=True)
+        self.requires("protobuf/5.27.0", transitive_headers=True)  # must matched grpc
 
         # build
         self.tool_requires("cmake/[>=3.14 <=4]")
@@ -64,4 +65,4 @@ class webots_grpcRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["webots-grpc-client"]
+        self.cpp_info.libs = ["webots-grpc-client", "webots-grpc-proto"]

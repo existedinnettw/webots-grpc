@@ -5,7 +5,11 @@
             "defines": [],
             "cppStandard": "c++20",
             "intelliSenseMode": "linux-gcc-x64",
-            "cStandard": "c23"
+            "cStandard": "c23",
+            "includePath": [
+                "${default}",
+                "${workspaceFolder}/src"
+            ]
         }
     ],
     "version": 4
