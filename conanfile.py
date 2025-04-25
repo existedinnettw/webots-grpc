@@ -18,7 +18,15 @@ class webots_grpcRecipe(ConanFile):
     # Binary configuration
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": False, "fPIC": True}
+
+    default_options = {
+        "shared": False,
+        "fPIC": True,
+        # https://github.com/conan-io/conan/issues/15580#issuecomment-1922528404
+        "abseil/*:shared": False,
+        "protobuf/*:shared": False,  # Force protobuf to build as static
+        "grpc/*:shared": False,  # If built as shared protobuf must be shared as well.
+    }
 
     # Sources are located in the same place as this recipe, copy them to the recipe
     exports_sources = "CMakeLists.txt", "src/*", "protos/*"
@@ -35,7 +43,7 @@ class webots_grpcRecipe(ConanFile):
             self.options.rm_safe("fPIC")
 
     def requirements(self):
-        self.requires("grpc/1.67.1", transitive_headers=True)
+        self.requires("grpc/1.67.1", transitive_headers=True, transitive_libs=True)
         self.requires("protobuf/5.27.0", transitive_headers=True)  # must matched grpc
 
         # build

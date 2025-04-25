@@ -3,7 +3,7 @@
 #include <iostream>
 
 RobotClient::RobotClient(const std::shared_ptr<grpc::Channel>& channel)
-: stub_(webots::RobotService::NewStub(channel))
+  : stub_(webots::RobotService::NewStub(channel))
 {
 }
 

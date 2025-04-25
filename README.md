@@ -43,3 +43,9 @@ PYTHONPATH=C:\Program Files\Webots\lib\controller\python
 `poetry run "C:\Program Files\Webots\msys64\mingw64\bin\webots-controller.exe" --robot-name='Picker' .\webots_grpc\server.py`
 
 `poetry run python -m tests.client`
+
+### CPP
+
+```bash
+conan build . --build=missing -o protobuf/*:shared=False -o grpc/*:shared=False -o abseil/*:shared=False
+```

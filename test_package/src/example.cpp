@@ -1,4 +1,8 @@
 #include "webots-grpc-client.hpp"
+
+#include <grpcpp/create_channel.h>
+#include <grpcpp/grpcpp.h>
+
 #include <iostream>
 
 int
