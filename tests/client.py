@@ -1,4 +1,5 @@
 # Ensure the generated files are in the PYTHONPATH
+import argparse
 import os
 import sys
 
@@ -18,11 +19,13 @@ import generated.motor_pb2 as motor_pb2
 import generated.motor_pb2_grpc as motor_pb2_grpc
 import generated.robot_pb2 as robot_pb2
 import generated.robot_pb2_grpc as robot_pb2_grpc
+import generated.position_sensor_pb2 as position_sensor_pb2
+import generated.position_sensor_pb2_grpc as position_sensor_pb2_grpc
 
 
-def run():
+def run(server_url):
     # Connect to the gRPC server
-    with grpc.insecure_channel("localhost:50051") as channel:
+    with grpc.insecure_channel(server_url) as channel:
         reflection_db = ProtoReflectionDescriptorDatabase(channel)
         services = reflection_db.get_services()
         print(f"found services: {services}")
@@ -75,6 +78,7 @@ def run():
                     "motor_request": motor_request,
                     "min_position": 0,
                     "max_position": 0,
+                    "position_sensor_name": "",
                 }
             except grpc.RpcError as e:
                 print(f"Error calling GetMotor for {motor_name}: {e.code()} - {e.details()}")
@@ -103,8 +107,49 @@ def run():
                     f"Error calling GetMin/MaxPosition for {motor_name}: {e.code()} - {e.details()}"
                 )
 
+        # Fetch position sensor name for each motor and enable it
+        for motor_name, motor in motors.items():
+            try:
+                response: motor_pb2.GetPositionSensorResponse = motor_stub.GetPositionSensor(
+                    motor["motor_request"]
+                )
+                motor["position_sensor_name"] = response.position_sensor_name
+                print(f"Motor: {motor_name}, Position Sensor Name: {motor['position_sensor_name']}")
+            except grpc.RpcError as e:
+                print(
+                    f"Error calling GetPositionSensor for {motor_name}: {e.code()} - {e.details()}"
+                )
+
+            # Enable position sensor
+            try:
+                # `Enable` return empty
+                response: empty_pb2 = position_sensor_pb2_grpc.PositionSensorServiceStub(
+                    channel
+                ).Enable(
+                    position_sensor_pb2.EnableRequest(
+                        name=motor["position_sensor_name"], sampling_period=32
+                    )
+                )
+            except grpc.RpcError as e:
+                print(f"Error calling Enable for {motor_name}: {e.code()} - {e.details()}")
+
         # Move motors randomly within their min/max range
         for i in range(100):
+            # feedback position
+            for motor_name, motor in motors.items():
+                try:
+                    response: position_sensor_pb2.GetValueResponse = (
+                        position_sensor_pb2_grpc.PositionSensorServiceStub(channel).GetValue(
+                            position_sensor_pb2.PositionSensorRequest(
+                                name=motor["position_sensor_name"]
+                            )
+                        )
+                    )
+                    print(f"Motor: {motor_name}, Position Sensor Value: {response.value}")
+                except grpc.RpcError as e:
+                    print(f"Error calling GetValue for {motor_name}: {e.code()} - {e.details()}")
+
+            # Set random position for each motor
             for motor_name, motor in motors.items():
                 position = motor["min_position"] + (
                     motor["max_position"] - motor["min_position"]
@@ -134,4 +179,12 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    parser = argparse.ArgumentParser(description="Run the gRPC client.")
+    parser.add_argument(
+        "--url",
+        type=str,
+        default="localhost:50051",
+        help="The gRPC server URL (default: localhost:50051)",
+    )
+    args = parser.parse_args()
+    run(args.url)

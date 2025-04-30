@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package webots;
+
+import "google/protobuf/empty.proto";
+
+/**
+* @see webots/include/controller/cpp/webots/PositionSensor.hpp
+* @see webots/src/controller/cpp/PositionSensor.cpp
+* @see webots/lib/controller/python/controller/position_sensor.py
+*/
+
+service PositionSensorService {
+  rpc Enable(EnableRequest) returns (google.protobuf.Empty);
+  rpc Disable(PositionSensorRequest) returns (google.protobuf.Empty);
+  rpc GetSamplingPeriod(PositionSensorRequest) returns (GetSamplingPeriodResponse);
+  rpc GetValue(PositionSensorRequest) returns (GetValueResponse);
+  rpc GetType(PositionSensorRequest) returns (GetTypeResponse);
+  rpc GetBrakeTag(PositionSensorRequest) returns (GetBrakeTagResponse);
+  rpc GetMotorTag(PositionSensorRequest) returns (GetMotorTagResponse);
+}
+
+message PositionSensorRequest {
+  string name = 1;// Name of the position sensor
+}
+
+message EnableRequest {
+  string name = 1;// Name of the position sensor
+  int32 sampling_period = 2;// Sampling period in milliseconds
+}
+
+message GetSamplingPeriodResponse {
+  int32 sampling_period = 1;// Sampling period in milliseconds
+}
+
+message GetValueResponse {
+  double value = 1;// Value in radians or meters
+}
+
+message GetTypeResponse {
+  enum Type {
+    ROTATIONAL = 0;
+    LINEAR = 1;
+  }
+  Type type = 1;// Type of the position sensor
+}
+
+message GetBrakeTagResponse {
+  int32 brake_tag = 1;// Tag of the associated brake
+}
+
+message GetMotorTagResponse {
+  int32 motor_tag = 1;// Tag of the associated motor
+}
+
+

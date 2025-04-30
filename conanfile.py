@@ -9,11 +9,11 @@ class webots_grpcRecipe(ConanFile):
     package_type = "library"
 
     # Optional metadata
-    license = "<Put the package license here>"
+    license = "MPL-2.0"
     author = "<Put your name here> <And your email here>"
-    url = "<Package recipe repository url here, for issues about the package>"
-    description = "<Description of webots-grpc package here>"
-    topics = ("<Put some tag here>", "<here>", "<and here>")
+    url = "https://github.com/existedinnettw/webots-grpc"
+    description = "webots gRPC gateway and client"
+    topics = ("webots", "gRPC", "client", "gateway")
 
     # Binary configuration
     settings = "os", "compiler", "build_type", "arch"

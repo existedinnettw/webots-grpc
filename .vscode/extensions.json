@@ -9,6 +9,8 @@
         "cheshirekow.cmake-format",
         "ms-python.python",
         "charliermarsh.ruff",
-        "ms-vscode.cmake-tools"
+        "ms-vscode.cmake-tools",
+        "dancheg97.grpc-clicker",
+        "bierner.markdown-mermaid"
     ]
 }

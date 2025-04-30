@@ -17,12 +17,15 @@ import generated.device_pb2 as device_pb2
 import generated.device_pb2_grpc as device_pb2_grpc
 import generated.motor_pb2 as motor_pb2
 import generated.motor_pb2_grpc as motor_pb2_grpc
+import generated.position_sensor_pb2 as position_sensor_pb2
+import generated.position_sensor_pb2_grpc as position_sensor_pb2_grpc
 import generated.robot_pb2 as robot_pb2
 
 # Import the generated gRPC modules
 import generated.robot_pb2_grpc as robot_pb2_grpc
 from webots_grpc.device_service import DeviceService
 from webots_grpc.motor_service import MotorService
+from webots_grpc.position_sensor_service import PositionSensorService
 
 # Import the service implementations
 from webots_grpc.robot_service import RobotService
@@ -39,12 +42,16 @@ def serve():
     robot_pb2_grpc.add_RobotServiceServicer_to_server(RobotService(robot), server)
     motor_pb2_grpc.add_MotorServiceServicer_to_server(MotorService(robot), server)
     device_pb2_grpc.add_DeviceServiceServicer_to_server(DeviceService(robot), server)
+    position_sensor_pb2_grpc.add_PositionSensorServiceServicer_to_server(
+        PositionSensorService(robot), server
+    )
 
     # Enable reflection
     service_names = (
         robot_pb2.DESCRIPTOR.services_by_name["RobotService"].full_name,
         motor_pb2.DESCRIPTOR.services_by_name["MotorService"].full_name,
         device_pb2.DESCRIPTOR.services_by_name["DeviceService"].full_name,
+        position_sensor_pb2.DESCRIPTOR.services_by_name["PositionSensorService"].full_name,
         reflection.SERVICE_NAME,  # Reflection service
     )
     reflection.enable_server_reflection(service_names, server)

@@ -1,9 +1,17 @@
 # webots-grpc
 
-This project is a simple gateway convert from mqtt message to webots socket IPC API. It follow some rules.
+This project is a simple gateway convert from gRPC to webots socket IPC API. It follow some rules.
 
 * extern control
 * synchronous simulation
+
+```mermaid
+graph LR
+
+    A[Webots] -->|API| B[Python extern controller gRPC service gateway]
+    B -->|gRPC| D[Python gRPC client app]
+    B -->|gRPC| C[CPP gRPC client app]
+```
 
 ### tree
 
@@ -17,6 +25,13 @@ poetry run python -m grpc_tools.protoc -I ./protos --python_out=./generated --py
 
 `grpcurl -plaintext localhost:50051 list`
 `grpcurl -plaintext localhost:50051 describe device.DeviceService`
+
+### for linux
+
+```bash
+export WEBOTS_HOME=/usr/local/webots
+poetry run "${WEBOTS_HOME}/webots-controller" --robot-name='Picker' ./webots_grpc/server.py
+```
 
 ### for windows
 

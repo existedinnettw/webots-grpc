@@ -70,9 +70,10 @@
     <link name="link3_1">
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
-            <!-- <geometry>
+            <!-- may need to uncomment for conversion -->
+            <geometry>
                 <box size="0.05 0.05 0.2" />
-            </geometry> -->
+            </geometry>
             <material name="link3_1-material">
                 <color rgba="0.4969329950515914 0.22696587349938613 0.12477181755144427 1" />
             </material>

@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package webots;
+
+/*
+* In python, sensor is inherit from device, however, in C++ there is no sensor type.
+* Therefore, sensor type will **not** be implemented.
+* @see webots/lib/controller/python/controller/sensor.py
+*/
