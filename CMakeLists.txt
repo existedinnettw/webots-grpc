@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.15)
 project(webots-grpc CXX)
 set(CMAKE_CXX_STANDARD 20)
 
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif ()
+
 find_package(Protobuf CONFIG REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
 

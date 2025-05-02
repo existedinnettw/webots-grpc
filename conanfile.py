@@ -1,4 +1,5 @@
 from conan import ConanFile
+from conan.errors import ConanInvalidConfiguration
 from conan.tools.build import can_run, check_min_cppstd  # noqa: F401
 from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
 
@@ -33,6 +34,19 @@ class webots_grpcRecipe(ConanFile):
 
     def validate(self):
         check_min_cppstd(self, "20")  # grpc
+        # Validate that dependencies are built as static libraries
+        if self.dependencies["abseil"].options.shared:
+            raise ConanInvalidConfiguration(
+                "abseil must be built as a static library (shared=False)."
+            )
+        if self.dependencies["protobuf"].options.shared:
+            raise ConanInvalidConfiguration(
+                "protobuf must be built as a static library (shared=False)."
+            )
+        if self.dependencies["grpc"].options.shared:
+            raise ConanInvalidConfiguration(
+                "grpc must be built as a static library (shared=False)."
+            )
 
     def config_options(self):
         if self.settings.os == "Windows":
@@ -42,6 +56,7 @@ class webots_grpcRecipe(ConanFile):
         if self.options.shared:
             self.options.rm_safe("fPIC")
 
+        # [Defining options for dependencies in conanfile.py recipes doesn’t work](https://docs.conan.io/2/knowledge/faq.html#defining-options-for-dependencies-in-conanfile-py-recipes-doesn-t-work)
         # Force dependencies to build as static libraries
         self.options["abseil/*"].shared = False
         self.options["protobuf/*"].shared = False
