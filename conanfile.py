@@ -10,7 +10,7 @@ class webots_grpcRecipe(ConanFile):
 
     # Optional metadata
     license = "MPL-2.0"
-    author = "<Put your name here> <And your email here>"
+    author = "insleker <bkinnightskytw@gmail.com>"
     url = "https://github.com/existedinnettw/webots-grpc"
     description = "webots gRPC gateway and client"
     topics = ("webots", "gRPC", "client", "gateway")
@@ -41,6 +41,11 @@ class webots_grpcRecipe(ConanFile):
     def configure(self):
         if self.options.shared:
             self.options.rm_safe("fPIC")
+
+        # Force dependencies to build as static libraries
+        self.options["abseil/*"].shared = False
+        self.options["protobuf/*"].shared = False
+        self.options["grpc/*"].shared = False
 
     def requirements(self):
         self.requires("grpc/1.67.1", transitive_headers=True, transitive_libs=True)

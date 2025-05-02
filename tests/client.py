@@ -14,13 +14,12 @@ from grpc_reflection.v1alpha.proto_reflection_descriptor_database import (
 )
 
 import generated.device_pb2 as device_pb2
-import generated.device_pb2_grpc as device_pb2_grpc
 import generated.motor_pb2 as motor_pb2
 import generated.motor_pb2_grpc as motor_pb2_grpc
-import generated.robot_pb2 as robot_pb2
-import generated.robot_pb2_grpc as robot_pb2_grpc
 import generated.position_sensor_pb2 as position_sensor_pb2
 import generated.position_sensor_pb2_grpc as position_sensor_pb2_grpc
+import generated.robot_pb2 as robot_pb2
+import generated.robot_pb2_grpc as robot_pb2_grpc
 
 
 def run(server_url):
@@ -182,6 +181,7 @@ if __name__ == "__main__":
     """
     TODO
     - Choose a build in webots sample world for testing
+    - May create a GUI demo in `flet` to show hierarchy of robots
     """
     parser = argparse.ArgumentParser(description="Run the gRPC client.")
     parser.add_argument(

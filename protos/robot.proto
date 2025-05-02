@@ -2,50 +2,108 @@ syntax = "proto3";
 
 package webots;
 
-
 import "device.proto";
 import "google/protobuf/empty.proto";
 
 /**
-* @see webots/include/controller/cpp/webots/Robot.hpp
-* @see webots/src/controller/cpp/Robot.cpp
-* @see webots/lib/controller/python/controller/robot.py
-*/
-
+ * @see [webots/include/controller/cpp/webots/Robot.hpp](https://github.com/cyberbotics/webots/blob/master/include/controller/cpp/webots/Robot.hpp)
+ * @see webots/src/controller/cpp/Robot.cpp
+ * @see webots/lib/controller/python/controller/robot.py
+ * @see [Webots Reference Manual - Robot](https://www.cyberbotics.com/doc/reference/robot)
+ * @details This service provides access to robot-level functionalities, such as retrieving the robot's name, model, custom data, and devices, as well as controlling the simulation step.
+ */
 service RobotService {
+  /**
+   * Retrieves the name of the robot.
+   * @return RobotNameResponse - The response containing the robot's name.
+   */
   rpc GetRobotName(google.protobuf.Empty) returns (RobotNameResponse);
+
+  /**
+   * Retrieves the model of the robot.
+   * @return RobotModelResponse - The response containing the robot's model.
+   */
   rpc GetRobotModel(google.protobuf.Empty) returns (RobotModelResponse);
+
+  /**
+   * Retrieves the custom data associated with the robot.
+   * @return CustomDataResponse - The response containing the custom data as a string.
+   */
   rpc GetCustomData(google.protobuf.Empty) returns (CustomDataResponse);
+
+  /**
+   * Sets custom data for the robot.
+   * @param CustomDataRequest - The request containing the custom data to set.
+   * @return google.protobuf.Empty - An empty response indicating success.
+   */
   rpc SetCustomData(CustomDataRequest) returns (google.protobuf.Empty);
+
+  /**
+   * Retrieves a device by its name.
+   * @param DeviceRequest - The request containing the device name.
+   * @return DeviceResponse - The response containing the device information.
+   */
   rpc GetDevice(DeviceRequest) returns (DeviceResponse);
+
+  /**
+   * Retrieves the list of all devices associated with the robot.
+   * @return DeviceListResponse - The response containing a list of devices.
+   */
   rpc GetDeviceList(google.protobuf.Empty) returns (DeviceListResponse);
+
+  /**
+   * Advances the simulation by a specified time step.
+   * @param StepRequest - The request containing the time step in milliseconds.
+   * @return StepResponse - The response indicating whether the step was successful.
+   */
   rpc Step(StepRequest) returns (StepResponse);
 }
 
+/**
+ * Response message containing the name of the robot.
+ */
 message RobotNameResponse {
-  string name = 1;
+  string name = 1;// The name of the robot.
 }
 
+/**
+ * Response message containing the model of the robot.
+ */
 message RobotModelResponse {
-  string model = 1;
+  string model = 1;// The model of the robot.
 }
 
+/**
+ * Request message for setting custom data for the robot.
+ */
 message CustomDataRequest {
-  string data = 1;
+  string data = 1;// The custom data to set for the robot.
 }
 
+/**
+ * Response message containing the custom data of the robot.
+ */
 message CustomDataResponse {
-  string data = 1;
+  string data = 1;// The custom data associated with the robot.
 }
 
+/**
+ * Response message containing the list of devices associated with the robot.
+ */
 message DeviceListResponse {
-  repeated DeviceResponse devices = 1;
+  repeated DeviceResponse devices = 1;// A list of devices associated with the robot.
 }
 
+/**
+ * Request message for advancing the simulation by a time step.
+ */
 message StepRequest {
-  int32 time_step = 1;
+  int32 time_step = 1;// The time step in milliseconds.
 }
 
+/**
+ * Response message indicating the success of the simulation step.
+ */
 message StepResponse {
-  bool success = 1;
+  bool success = 1;// Whether the simulation step was successful.
 }

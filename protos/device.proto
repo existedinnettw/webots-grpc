@@ -6,37 +6,69 @@ package webots;
 * @see webots/include/controller/cpp/webots/Device.hpp
 * @see webots/src/controller/cpp/Device.cpp
 * @see webots/lib/controller/python/controller/device.py
-* @details it has no meaning to get model or node_type if device object had gotten
-* therefore following RPC is not expected to be used
+* @see [Webots Reference Manual - Device](https://www.cyberbotics.com/doc/reference/device)
+* @details This service provides access to Webots device properties and functionalities.
+* It allows retrieving the model, node type, and tag of a device.
+* Note: It is not meaningful to retrieve the model or node type if the device object has already been obtained.
 */
 
 service DeviceService {
+  /**
+  * Retrieves the model of the device.
+  * @param DeviceRequest - The request containing the device name.
+  * @return DeviceModelResponse - The response containing the device model as a string.
+  */
   rpc GetDeviceModel(DeviceRequest) returns (DeviceModelResponse);
+
+  /**
+  * Retrieves the node type of the device.
+  * @param DeviceRequest - The request containing the device name.
+  * @return NodeTypeResponse - The response containing the node type as an integer.
+  */
   rpc GetNodeType(DeviceRequest) returns (NodeTypeResponse);
+
+  /**
+  * Retrieves the tag of the device.
+  * @param DeviceRequest - The request containing the device name.
+  * @return DeviceTagResponse - The response containing the device tag as an integer.
+  */
   rpc GetTag(DeviceRequest) returns (DeviceTagResponse);
 }
 
 /**
-* use device name to replace this/self pointer
+* Request message for device-related operations.
+* Contains the name of the device to identify it.
 */
 message DeviceRequest {
-  string name = 1;
+  string name = 1;// The name of the device.
 }
 
+/**
+* Response message containing basic device information.
+*/
 message DeviceResponse {
-  string name = 1;
-  string model = 2;
-  int32 node_type = 3;
+  string name = 1;// The name of the device.
+  string model = 2;// The model of the device.
+  int32 node_type = 3;// The node type of the device.
 }
 
+/**
+* Response message containing the model of the device.
+*/
 message DeviceModelResponse {
-  string model = 1;
+  string model = 1;// The model of the device.
 }
 
+/**
+* Response message containing the node type of the device.
+*/
 message NodeTypeResponse {
-  int32 node_type = 1;
+  int32 node_type = 1;// The node type of the device.
 }
 
+/**
+* Response message containing the tag of the device.
+*/
 message DeviceTagResponse {
-  int32 tag = 1;
+  int32 tag = 1;// The tag of the device.
 }

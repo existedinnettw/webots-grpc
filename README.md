@@ -69,5 +69,13 @@ PYTHONPATH=C:\Program Files\Webots\lib\controller\python
 ### CPP
 
 ```bash
+conan build . --build=missing
+```
+
+Aware that recipe will force `protobuf`, `grpc`, `abseil` to be static link, since `protoc` require static linked to work properly.
+
+Following command is fully equivalent to above command.
+
+```bash
 conan build . --build=missing -o protobuf/*:shared=False -o grpc/*:shared=False -o abseil/*:shared=False
 ```
