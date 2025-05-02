@@ -5,98 +5,162 @@ package webots;
 import "device.proto";
 import "google/protobuf/empty.proto";
 
+/**
+ * @see [webots/include/controller/cpp/webots/Motor.hpp](https://github.com/cyberbotics/webots/blob/master/include/controller/cpp/webots/Motor.hpp)
+ * @see webots/src/controller/cpp/Motor.cpp
+ * @see webots/lib/controller/python/controller/motor.py
+ * @see [Webots Reference Manual-Motor](https://www.cyberbotics.com/doc/reference/motor)
+ */
 service MotorService {
-  //ctor
+  // Retrieves motor details by name.
   rpc GetMotor(MotorRequest) returns (MotorResponse);
+
+  // Sets the target position of the motor.
+  // `name`: The name of the motor.
+  // `position`: The target position in radians (for rotational motors) or meters (for linear motors).
   rpc SetPosition(SetPositionRequest) returns (google.protobuf.Empty);
+
+  // Sets the velocity of the motor.
+  // `name`: The name of the motor.
+  // `velocity`: The target velocity in radians/second or meters/second.
   rpc SetVelocity(SetVelocityRequest) returns (google.protobuf.Empty);
+
+  // Retrieves the current velocity of the motor.
   rpc GetVelocity(MotorRequest) returns (GetVelocityResponse);
+
+  // Sets the torque of the motor.
+  // `name`: The name of the motor.
+  // `torque`: The target torque in Nm.
   rpc SetTorque(SetTorqueRequest) returns (google.protobuf.Empty);
+
+  // Retrieves the torque feedback of the motor.
   rpc GetTorqueFeedback(MotorRequest) returns (GetTorqueFeedbackResponse);
+
+  // Retrieves the minimum position of the motor.
   rpc GetMinPosition(MotorRequest) returns (GetMinPositionResponse);
+
+  // Retrieves the maximum position of the motor.
   rpc GetMaxPosition(MotorRequest) returns (GetMaxPositionResponse);
+
+  // Sets the PID control parameters for the motor.
+  // `name`: The name of the motor.
+  // `p`: Proportional gain.
+  // `i`: Integral gain.
+  // `d`: Derivative gain.
   rpc SetControlPID(SetControlPIDRequest) returns (google.protobuf.Empty);
+
+  // Retrieves the target position of the motor.
   rpc GetTargetPosition(MotorRequest) returns (GetTargetPositionResponse);
+
+  // Retrieves the name of the position sensor attached to the motor.
   rpc GetPositionSensor(MotorRequest) returns (GetPositionSensorResponse);
 }
 
-// @see DeviceRequest
+// Request message for motor-related RPCs.
+// Contains the name of the motor to identify it.
 message MotorRequest {
-  // name replace motor pointer
+  // The name of the motor.
   string name = 1;
-  //void para method
 }
 
-// @see `controller.motor.Motor`
+// Response message for GetMotor RPC.
+// Contains details about the motor.
 message MotorResponse {
-  DeviceResponse device = 1;// Reuse the Device message
+  // Device information for the motor.
+  DeviceResponse device = 1;
 
-  //typedef enum { ROTATIONAL = 0, LINEAR } Type;
+  // The type of the motor: rotational or linear.
   enum Type {
-    ROTATIONAL = 0;
-    LINEAR = 1;
+    ROTATIONAL = 0;// Rotational motor.
+    LINEAR = 1;// Linear motor.
   }
   Type type = 2;
 }
 
+// Request message for SetPosition RPC.
+// Sets the target position of the motor.
 message SetPositionRequest {
+  // The name of the motor.
   string name = 1;
+
+  // The target position in radians (rotational) or meters (linear).
   float position = 2;
 }
 
-message SetPositionResponse {
-  bool success = 1;
-}
-
+// Request message for SetVelocity RPC.
+// Sets the target velocity of the motor.
 message SetVelocityRequest {
+  // The name of the motor.
   string name = 1;
+
+  // The target velocity in radians/second or meters/second.
   float velocity = 2;
 }
 
-message SetVelocityResponse {
-  bool success = 1;
-}
-
+// Response message for GetVelocity RPC.
+// Contains the current velocity of the motor.
 message GetVelocityResponse {
+  // The current velocity in radians/second or meters/second.
   float velocity = 1;
 }
 
+// Request message for SetTorque RPC.
+// Sets the target torque of the motor.
 message SetTorqueRequest {
+  // The name of the motor.
   string name = 1;
+
+  // The target torque in Nm.
   float torque = 2;
 }
 
-message SetTorqueResponse {
-  bool success = 1;
-}
-
+// Response message for GetTorqueFeedback RPC.
+// Contains the torque feedback of the motor.
 message GetTorqueFeedbackResponse {
+  // The torque feedback in Nm.
   float torque = 1;
 }
 
+// Response message for GetMinPosition RPC.
+// Contains the minimum position of the motor.
 message GetMinPositionResponse {
+  // The minimum position in radians or meters.
   float min_position = 1;
 }
 
+// Response message for GetMaxPosition RPC.
+// Contains the maximum position of the motor.
 message GetMaxPositionResponse {
+  // The maximum position in radians or meters.
   float max_position = 1;
 }
 
+// Request message for SetControlPID RPC.
+// Sets the PID control parameters for the motor.
 message SetControlPIDRequest {
+  // The name of the motor.
   string name = 1;
+
+  // Proportional gain.
   float p = 2;
+
+  // Integral gain.
   float i = 3;
+
+  // Derivative gain.
   float d = 4;
 }
 
-message SetControlPIDResponse {
-  bool success = 1;
-}
-
+// Response message for GetTargetPosition RPC.
+// Contains the target position of the motor.
 message GetTargetPositionResponse {
+  // The target position in radians or meters.
   float target_position = 1;
 }
 
+// Response message for GetPositionSensor RPC.
+// Contains the name of the position sensor attached to the motor.
 message GetPositionSensorResponse {
+  // The name of the position sensor.
   string position_sensor_name = 1;
 }

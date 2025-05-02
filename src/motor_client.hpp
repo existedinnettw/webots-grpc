@@ -5,6 +5,9 @@
 #include <motor.pb.h>      //messages
 #include <string>
 
+/**
+ * @ref webots/include/controller/cpp/webots/Motor.hpp
+ */
 class MotorClient
 {
 public:
@@ -19,6 +22,11 @@ public:
 
   // Get motor maximum position
   double GetMaxPosition(const std::string& motor_name);
+
+  /**
+   * @brief Get the position sensor name associated with the motor.
+   */
+  std::string GetPositionSensor(const std::string& motor_name);
 
 private:
   std::unique_ptr<webots::MotorService::Stub> stub_;

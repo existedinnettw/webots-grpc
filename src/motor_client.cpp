@@ -62,3 +62,20 @@ MotorClient::GetMaxPosition(const std::string& motor_name)
   }
   return response.max_position();
 }
+
+std::string
+MotorClient::GetPositionSensor(const std::string& motor_name)
+{
+  webots::MotorRequest request; // Use MotorRequest
+  request.set_name(motor_name);
+
+  webots::GetPositionSensorResponse response;
+  grpc::ClientContext context;
+
+  grpc::Status status = stub_->GetPositionSensor(&context, request, &response);
+  if (!status.ok()) {
+    std::cerr << "Error in GetPositionSensor: " << status.error_message() << std::endl;
+    throw std::runtime_error("Failed to get position sensor");
+  }
+  return response.position_sensor_name();
+}

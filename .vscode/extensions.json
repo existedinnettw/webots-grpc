@@ -11,6 +11,7 @@
         "charliermarsh.ruff",
         "ms-vscode.cmake-tools",
         "dancheg97.grpc-clicker",
-        "bierner.markdown-mermaid"
+        "bierner.markdown-mermaid",
+        "ms-vscode.live-server"
     ]
 }

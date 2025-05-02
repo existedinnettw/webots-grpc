@@ -8,7 +8,7 @@ find_package(gRPC CONFIG REQUIRED)
 # proto
 # https://github.com/protocolbuffers/protobuf/blob/main/docs/cmake_protobuf_generate.md
 add_library(webots-grpc-proto protos/robot.proto protos/device.proto
-                              protos/motor.proto)
+                              protos/motor.proto protos/position_sensor.proto)
 target_link_libraries(webots-grpc-proto PUBLIC protobuf::libprotobuf gRPC::grpc
                                                gRPC::grpc++)
 # set(PROTO_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")

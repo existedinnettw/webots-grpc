@@ -165,6 +165,6 @@ cython_debug/
 descriptions/**/*.proto
 generated/*
 !generated/__init__.py
-
+doc/*.html
 
 *Presets.json

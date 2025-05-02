@@ -179,6 +179,10 @@ def run(server_url):
 
 
 if __name__ == "__main__":
+    """
+    TODO
+    - Choose a build in webots sample world for testing
+    """
     parser = argparse.ArgumentParser(description="Run the gRPC client.")
     parser.add_argument(
         "--url",

@@ -8,9 +8,9 @@ This project is a simple gateway convert from gRPC to webots socket IPC API. It 
 ```mermaid
 graph LR
 
-    A[Webots] -->|API| B[Python extern controller gRPC service gateway]
-    B -->|gRPC| D[Python gRPC client app]
-    B -->|gRPC| C[CPP gRPC client app]
+    A[Webots] <-->|API| B[Python extern controller gRPC service gateway]
+    B <-->|gRPC| D[Python gRPC client app]
+    B <-->|gRPC| C[CPP gRPC client app]
 ```
 
 ### tree
@@ -23,6 +23,13 @@ If you have no robot description file, `descriptions` folder offer some basic on
 poetry run python -m grpc_tools.protoc -I ./protos --python_out=./generated --pyi_out=./generated --grpc_python_out=./generated ./protos/*.proto
 ```
 
+or generate document by [protoc-gen-doc](https://github.com/pseudomuto/protoc-gen-doc) plugin at the same time
+
+```bash
+poetry run python -m grpc_tools.protoc -I ./protos --python_out=./generated --pyi_out=./generated --grpc_python_out=./generated --doc_out=./doc --doc_opt=html,index.html ./protos/*.proto
+```
+
+reflection tool to help you list service
 `grpcurl -plaintext localhost:50051 list`
 `grpcurl -plaintext localhost:50051 describe device.DeviceService`
 
