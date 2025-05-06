@@ -32,6 +32,18 @@ main(int argc, char* argv[])
     std::cerr << "Error calling GetRobotName: " << e.what() << std::endl;
   }
 
+  // Get basic time step
+  try {
+    double basicTimeStep = robotClient.GetBasicTimeStep();
+    if (basicTimeStep > 0) {
+      std::cout << "Basic Time Step: " << basicTimeStep << std::endl;
+    } else {
+      std::cerr << "Failed to get Basic Time Step." << std::endl;
+    }
+  } catch (const std::exception& e) {
+    std::cerr << "Error calling GetBasicTimeStep: " << e.what() << std::endl;
+  }
+
   // Get Device List
   std::vector<std::string> deviceList;
   try {

@@ -118,3 +118,20 @@ RobotClient::Step(int32_t time_step)
     return false;
   }
 }
+
+double
+RobotClient::GetBasicTimeStep()
+{
+  google::protobuf::Empty request; // Use google::protobuf::Empty
+  webots::GetBasicTimeStepResponse response;
+  grpc::ClientContext context;
+
+  grpc::Status status = stub_->GetBasicTimeStep(&context, request, &response);
+
+  if (status.ok()) {
+    return response.basic_time_step();
+  } else {
+    std::cerr << "GetBasicTimeStep RPC failed: " << status.error_message() << std::endl;
+    return -1.0; // Return an invalid value to indicate failure
+  }
+}

@@ -41,6 +41,9 @@ def run(server_url):
         except grpc.RpcError as e:
             print(f"Error calling GetRobotName: {e.code()} - {e.details()}")
 
+        basic_time_step = robot_stub.GetBasicTimeStep(empty_pb2.Empty()).basic_time_step
+        print("Basic Time Step:", basic_time_step)
+
         # Get device list from robot
         try:
             get_device_list_response: robot_pb2.DeviceListResponse = robot_stub.GetDeviceList(

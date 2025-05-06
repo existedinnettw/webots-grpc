@@ -31,6 +31,9 @@ public:
   // Method to perform a simulation step
   bool Step(int32_t time_step);
 
+  // Method to get the basic time step
+  double GetBasicTimeStep();
+
 private:
   std::unique_ptr<webots::RobotService::Stub> stub_; // gRPC stub for RobotService
 };

@@ -7,6 +7,10 @@ import generated.robot_pb2_grpc as robot_pb2_grpc
 
 
 class RobotService(robot_pb2_grpc.RobotServiceServicer):
+    """
+    webots/lib/controller/python/controller/robot.py
+    """
+
     def __init__(self, robot: Robot):
         self.robot = robot
 
@@ -45,6 +49,9 @@ class RobotService(robot_pb2_grpc.RobotServiceServicer):
             model=device.getModel(),
             node_type=device.getNodeType(),
         )
+
+    def GetBasicTimeStep(self, request, context):
+        return robot_pb2.GetBasicTimeStepResponse(basic_time_step=self.robot.getBasicTimeStep())
 
     def Step(self, request, context):
         success = self.robot.step(request.time_step) != -1

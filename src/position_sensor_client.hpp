@@ -6,7 +6,11 @@
 #include <string>
 
 /**
- * @ref webots/include/controller/cpp/webots/PositionSensor.hpp
+ * @ref
+ * [webots/include/controller/cpp/webots/PositionSensor.hpp](https://github.com/cyberbotics/webots/blob/master/include/controller/cpp/webots/PositionSensor.hpp)
+ * @see webots/src/controller/cpp/PositionSensor.cpp
+ * @see webots/lib/controller/python/controller/position_sensor.py
+ * @see [Webots Reference Manual - PositionSensor](https://www.cyberbotics.com/doc/reference/positionsensor)
  */
 class PositionSensorClient
 {

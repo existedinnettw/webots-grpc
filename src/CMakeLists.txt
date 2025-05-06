@@ -8,7 +8,7 @@ set_target_properties(
     webots-grpc-client
     PROPERTIES
         PUBLIC_HEADER
-        "webots-grpc-client.hpp;motor_client.hpp;device_client.hpp;robot_client.hpp"
+        "webots-grpc-client.hpp;motor_client.hpp;device_client.hpp;robot_client.hpp;position_sensor_client.hpp"
 )
 install(TARGETS webots-grpc-client)
 

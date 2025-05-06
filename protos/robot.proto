@@ -51,6 +51,8 @@ service RobotService {
    */
   rpc GetDeviceList(google.protobuf.Empty) returns (DeviceListResponse);
 
+  rpc GetBasicTimeStep(google.protobuf.Empty) returns (GetBasicTimeStepResponse);
+
   /**
    * Advances the simulation by a specified time step.
    * @param StepRequest - The request containing the time step in milliseconds.
@@ -92,6 +94,13 @@ message CustomDataResponse {
  */
 message DeviceListResponse {
   repeated DeviceResponse devices = 1;// A list of devices associated with the robot.
+}
+
+/**
+ * @ref https://cyberbotics.com/doc/reference/robot#wb_robot_get_basic_time_step
+ */
+message GetBasicTimeStepResponse {
+  double basic_time_step = 1;// The basic time step of the robot.
 }
 
 /**
