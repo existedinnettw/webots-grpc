@@ -20,6 +20,8 @@ import generated.position_sensor_pb2 as position_sensor_pb2
 import generated.position_sensor_pb2_grpc as position_sensor_pb2_grpc
 import generated.robot_pb2 as robot_pb2
 import generated.robot_pb2_grpc as robot_pb2_grpc
+import generated.sensor_pb2 as sensor_pb2
+import generated.sensor_pb2_grpc as sensor_pb2_grpc
 
 
 def run(server_url):
@@ -57,7 +59,13 @@ def run(server_url):
             print(f"Error calling GetDeviceList: {e.code()} - {e.details()}")
 
         # Webots is designed to know the device name and type beforehand, reflection is not supported (expected)
-        motor_names = ["base_link_to_link2", "link2_to_link3_1", "link3_1_to_link4_1"]
+        # motor_names = ["base_link_to_link2", "link2_to_link3_1", "link3_1_to_link4_1"]
+        motor_names = [
+            d.name
+            for d in get_device_list_response.devices
+            if ("motor" in d.name or "_to_" in d.name) and "sensor" not in d.name
+        ]
+        print("Motor Names:", motor_names)
         motors = {}
 
         for motor_name in motor_names:
@@ -128,9 +136,7 @@ def run(server_url):
                 response: empty_pb2 = position_sensor_pb2_grpc.PositionSensorServiceStub(
                     channel
                 ).Enable(
-                    position_sensor_pb2.EnableRequest(
-                        name=motor["position_sensor_name"], sampling_period=32
-                    )
+                    sensor_pb2.EnableRequest(name=motor["position_sensor_name"], sampling_period=32)
                 )
             except grpc.RpcError as e:
                 print(f"Error calling Enable for {motor_name}: {e.code()} - {e.details()}")

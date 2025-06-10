@@ -25,6 +25,9 @@ public:
   // Method to set custom data
   bool SetCustomData(const std::string& data);
 
+  // Method to get a device by its name
+  std::string GetDevice(const std::string& device_name);
+
   // Method to get the list of devices
   std::vector<std::string> GetDeviceList();
 

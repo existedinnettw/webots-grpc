@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package webots;
+
+import "sensor.proto";
+import "google/protobuf/empty.proto";
+
+/**
+ * @see [webots/include/controller/cpp/webots/DistanceSensor.hpp](https://github.com/cyberbotics/webots/blob/master/include/controller/cpp/webots/DistanceSensor.hpp)
+ * @see webots/src/controller/cpp/DistanceSensor.cpp
+ * @see webots/lib/controller/python/controller/distance_sensor.py
+ * @see [Webots Reference Manual-DistanceSensor](https://cyberbotics.com/doc/reference/distancesensor)
+ */
+service DistanceSensorService {
+  rpc Enable(EnableRequest) returns (google.protobuf.Empty);
+  rpc Disable(DistanceSensorRequest) returns (google.protobuf.Empty);
+  rpc GetSamplingPeriod(DistanceSensorRequest) returns (GetSamplingPeriodResponse);
+  rpc GetValue(DistanceSensorRequest) returns (GetValueResponse);
+}
+
+message DistanceSensorRequest {
+  // The name of the DistanceSensor.
+  string name = 1;
+}

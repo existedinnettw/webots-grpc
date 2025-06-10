@@ -13,21 +13,23 @@ import grpc
 from controller.robot import Robot
 from grpc_reflection.v1alpha import reflection
 
+# Import the generated gRPC modules
 import generated.device_pb2 as device_pb2
 import generated.device_pb2_grpc as device_pb2_grpc
+import generated.distance_sensor_pb2 as distance_sensor_pb2
+import generated.distance_sensor_pb2_grpc as distance_sensor_pb2_grpc
 import generated.motor_pb2 as motor_pb2
 import generated.motor_pb2_grpc as motor_pb2_grpc
 import generated.position_sensor_pb2 as position_sensor_pb2
 import generated.position_sensor_pb2_grpc as position_sensor_pb2_grpc
 import generated.robot_pb2 as robot_pb2
-
-# Import the generated gRPC modules
 import generated.robot_pb2_grpc as robot_pb2_grpc
-from webots_grpc.device_service import DeviceService
-from webots_grpc.motor_service import MotorService
-from webots_grpc.position_sensor_service import PositionSensorService
 
 # Import the service implementations
+from webots_grpc.device_service import DeviceService
+from webots_grpc.distance_sensor_service import DistanceSensorService
+from webots_grpc.motor_service import MotorService
+from webots_grpc.position_sensor_service import PositionSensorService
 from webots_grpc.robot_service import RobotService
 
 
@@ -45,6 +47,9 @@ def serve():
     position_sensor_pb2_grpc.add_PositionSensorServiceServicer_to_server(
         PositionSensorService(robot), server
     )
+    distance_sensor_pb2_grpc.add_DistanceSensorServiceServicer_to_server(
+        DistanceSensorService(robot), server
+    )
 
     # Enable reflection
     service_names = (
@@ -52,6 +57,7 @@ def serve():
         motor_pb2.DESCRIPTOR.services_by_name["MotorService"].full_name,
         device_pb2.DESCRIPTOR.services_by_name["DeviceService"].full_name,
         position_sensor_pb2.DESCRIPTOR.services_by_name["PositionSensorService"].full_name,
+        distance_sensor_pb2.DESCRIPTOR.services_by_name["DistanceSensorService"].full_name,
         reflection.SERVICE_NAME,  # Reflection service
     )
     reflection.enable_server_reflection(service_names, server)

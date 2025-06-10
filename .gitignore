@@ -168,3 +168,4 @@ generated/*
 doc/*.html
 
 *Presets.json
+tests/worlds/.linear_motor.jpg

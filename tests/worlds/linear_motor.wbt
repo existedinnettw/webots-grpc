@@ -1,0 +1,135 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/k-team/khepera3/protos/Khepera3_DistanceSensor.proto"
+
+WorldInfo {
+  info [
+    "Example world demonstrating the use of a simple LinearMotor device."
+  ]
+  title "Linear Motor"
+  basicTimeStep 16
+  lineScale 0.02
+}
+Viewpoint {
+  orientation -0.055296122107537274 -0.849493761717671 0.5246929460957419 6.036328027080628
+  position -0.5701288336980543 -0.06323047660267782 0.20858919910494772
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+}
+DEF ROBOT Robot {
+  children [
+    Khepera3_DistanceSensor {
+      translation 0.0299999 -0.2 0.04
+      rotation 0 0 1 3.14159
+      name "pos ds"
+    }
+    Khepera3_DistanceSensor {
+      translation 0.03 -0.02 0.04
+      rotation 0 0 1 3.14159
+      name "home ds"
+    }
+    Khepera3_DistanceSensor {
+      translation 0.03 3.52079e-14 0.04
+      rotation 0 0 1 3.14159
+      name "neg ds"
+    }
+    SliderJoint {
+      jointParameters JointParameters {
+        position 0.0474880076944828
+        axis 0 -1 0
+      }
+      device [
+        PositionSensor {
+          name "linear motor sensor"
+        }
+        LinearMotor {
+          maxPosition 0.2
+        }
+      ]
+      endPoint Solid {
+        translation 0.015 -0.0474880076944828 0.005
+        rotation 0 1 0 1.5708
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColor 1 0.333333 0.498039
+              roughness 1
+              metalness 0
+            }
+            geometry Box {
+              size 0.09 0.01 0.02
+            }
+          }
+        ]
+      }
+    }
+    DEF BASIS_GROUP Pose {
+      translation 0.03 -0.1025 0
+      rotation 0 -1 0 1.570795
+      children [
+        Shape {
+          appearance PBRAppearance {
+            roughness 1
+            metalness 0
+          }
+          geometry Box {
+            size 0.07 0.25 0.01
+          }
+        }
+      ]
+    }
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/samples/devices/worlds/textures/ruler.png"
+          ]
+        }
+        roughness 1
+        metalness 0
+      }
+      geometry IndexedFaceSet {
+        coord Coordinate {
+          point [
+            -0.015 -0.204 0.001
+            0.015 -0.204 0.001
+            -0.015 -0.204 0
+            0.015 -0.204 0
+            -0.015 0.0042 0.001
+            0.015 0.0042 0.001
+            -0.015 0.0042 0
+            0.015 0.0042 0
+          ]
+        }
+        texCoord TextureCoordinate {
+          point [
+            1 0
+            1 1
+            0 1
+            0 0
+            0.005 0
+            0.005 1
+            0.01 1
+            0.01 0
+          ]
+        }
+        coordIndex [
+          2, 3, 1, 0, -1, 0, 1, 5, 4, -1, 6, 7, 3, 2, -1, 7, 5, 1, 3, -1, 4, 6, 2, 0, -1, 4, 5, 7, 6, -1
+        ]
+        texCoordIndex [
+          4, 5, 6, 7, -1, 0, 1, 2, 3, -1, 3, 2, 1, 0, -1, 4, 5, 6, 7, -1, 4, 5, 6, 7, -1, 4, 5, 6, 7, -1
+        ]
+      }
+      castShadows FALSE
+    }
+  ]
+  boundingObject USE BASIS_GROUP
+  controller "<extern>"
+}

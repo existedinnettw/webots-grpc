@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package webots;
 
+import "sensor.proto";
 import "google/protobuf/empty.proto";
 
 /**
@@ -23,19 +24,6 @@ service PositionSensorService {
 
 message PositionSensorRequest {
   string name = 1;// Name of the position sensor
-}
-
-message EnableRequest {
-  string name = 1;// Name of the position sensor
-  int32 sampling_period = 2;// Sampling period in milliseconds
-}
-
-message GetSamplingPeriodResponse {
-  int32 sampling_period = 1;// Sampling period in milliseconds
-}
-
-message GetValueResponse {
-  double value = 1;// Value in radians or meters
 }
 
 message GetTypeResponse {

@@ -5,6 +5,7 @@ from google.protobuf.empty_pb2 import Empty  # Import Empty for empty responses
 
 import generated.position_sensor_pb2 as position_sensor_pb2
 import generated.position_sensor_pb2_grpc as position_sensor_pb2_grpc
+import generated.sensor_pb2 as sensor_pb2
 
 
 class PositionSensorService(position_sensor_pb2_grpc.PositionSensorServiceServicer):
@@ -41,16 +42,16 @@ class PositionSensorService(position_sensor_pb2_grpc.PositionSensorServiceServic
     def GetSamplingPeriod(self, request, context):
         sensor = self._get_position_sensor(request.name, context)
         if sensor is None:
-            return position_sensor_pb2.GetSamplingPeriodResponse(sampling_period=0)
-        return position_sensor_pb2.GetSamplingPeriodResponse(
+            return sensor_pb2.GetSamplingPeriodResponse(sampling_period=0)
+        return sensor_pb2.GetSamplingPeriodResponse(
             sampling_period=sensor.getSamplingPeriod()
         )
 
     def GetValue(self, request, context):
         sensor = self._get_position_sensor(request.name, context)
         if sensor is None:
-            return position_sensor_pb2.GetValueResponse(value=0.0)
-        return position_sensor_pb2.GetValueResponse(value=sensor.getValue())
+            return sensor_pb2.GetValueResponse(value=0.0)
+        return sensor_pb2.GetValueResponse(value=sensor.getValue())
 
     def GetType(self, request, context):
         sensor = self._get_position_sensor(request.name, context)

@@ -80,6 +80,24 @@ RobotClient::SetCustomData(const std::string& data)
   }
 }
 
+std::string
+RobotClient::GetDevice(const std::string& device_name)
+{
+  webots::DeviceRequest request;
+  request.set_name(device_name);
+  webots::DeviceResponse response;
+  grpc::ClientContext context;
+
+  grpc::Status status = stub_->GetDevice(&context, request, &response);
+
+  if (status.ok()) {
+    return response.name();
+  } else {
+    std::cerr << "GetDevice RPC failed: " << status.error_message() << std::endl;
+    return "";
+  }
+}
+
 std::vector<std::string>
 RobotClient::GetDeviceList()
 {

@@ -8,7 +8,8 @@
             "cStandard": "c23",
             "includePath": [
                 "${default}",
-                "${workspaceFolder}/src"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/build"
             ]
         }
     ],
