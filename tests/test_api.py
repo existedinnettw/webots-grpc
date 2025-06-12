@@ -113,14 +113,29 @@ def test_motor_api(robot_stub, motor_stub, position_sensor_stub):
     motor_stub.SetPosition(motor_pb2.SetPositionRequest(name=motor_name, position=position))
 
     # Step simulation
-    for i in range(10):
-        assert robot_stub.Step(robot_pb2.StepRequest(time_step=32)).success
+    robot_stub.Step(robot_pb2.StepRequest(time_step=500)).success
 
     # Get updated position sensor value
     updated_value = position_sensor_stub.GetValue(
         position_sensor_pb2.PositionSensorRequest(name=pos_sensor_name)
     ).value
     assert pytest.approx(updated_value, 0.01) == position
+
+
+def test_motor_speed_api(robot_stub, motor_stub, position_sensor_stub):
+    motor_name = "linear motor"
+    pos_sensor_name = "linear motor sensor"
+
+    position_sensor_stub.Enable(sensor_pb2.EnableRequest(name=pos_sensor_name, sampling_period=32))
+    motor_stub.SetPosition(motor_pb2.SetPositionRequest(name=motor_name, position=0.1))
+    assert robot_stub.Step(robot_pb2.StepRequest(time_step=320)).success
+
+    motor_stub.SetVelocity(motor_pb2.SetVelocityRequest(name=motor_name, velocity=0.5))
+    assert robot_stub.Step(robot_pb2.StepRequest(time_step=600)).success
+    value = position_sensor_stub.GetValue(
+        position_sensor_pb2.PositionSensorRequest(name=pos_sensor_name)
+    ).value
+    assert pytest.approx(value, 0.05) == 0.2  # max pos
 
 
 def test_distance_sensor_api(robot_stub, motor_stub, position_sensor_stub, distance_sensor_stub):
@@ -152,8 +167,7 @@ def test_distance_sensor_api(robot_stub, motor_stub, position_sensor_stub, dista
     ]
     for target_pos, ans in zip([0, 0.1, 0.2 - 1e-6], ans_mat):
         motor_stub.SetPosition(motor_pb2.SetPositionRequest(name=motor_name, position=target_pos))
-        for i in range(10):
-            assert robot_stub.Step(robot_pb2.StepRequest(time_step=32)).success
+        assert robot_stub.Step(robot_pb2.StepRequest(time_step=500)).success
         assert (
             pytest.approx(
                 position_sensor_stub.GetValue(

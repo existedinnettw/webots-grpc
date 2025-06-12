@@ -1,34 +1,33 @@
-[tool.poetry]
-authors     = ["insleker <bkinnightskytw@gmail.com>"]
+[project]
+name = "webots-grpc"
+version = "0.1.2"
 description = ""
-name        = "webots-grpc"
-readme      = "README.md"
-version     = "0.1.0"
+authors = [{ name = "insleker", email = "bkinnightskytw@gmail.com" }]
+requires-python = ">=3.10,<3.14"
+readme = "README.md"
+dependencies = [
+    "grpcio>=1.71.0,<2",
+    "grpcio-reflection>=1.0.0,<2",
+]
 
-[tool.poetry.dependencies]
-grpcio            = "^1.71.0"
-grpcio-reflection = "^1.0.0"
-ikpy              = "^3.4.2"
-python            = ">=3.10,<3.14"
-# opencv-python     = "^4.10.0.84"
-# flet              = "^0.27.6"
-
-[tool.poetry.group.dev.dependencies]
-grpcio-tools = "^1.71.0"
-ruff         = "^0.11.5"
-urdf2webots  = "^2023.1.0"
-pytest = "^8.4.0"
-pytest-check = "^2.5.3"
+[dependency-groups]
+dev = [
+    "grpcio-tools>=1.71.0,<2",
+    "pytest>=8.4.0,<9",
+    "pytest-check>=2.5.3,<3",
+    "ruff>=0.11.5,<0.12",
+    "urdf2webots>=2023.1.0,<2024",
+]
 
 [build-system]
-build-backend = "poetry.core.masonry.api"
-requires      = ["poetry-core"]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.ruff] # https://docs.astral.sh/ruff/settings/#top-level
+[tool.ruff]
 exclude     = ["**/migrations/", "**/manage.py"]
 line-length = 100
 
-[tool.ruff.lint] # https://docs.astral.sh/ruff/settings/#lint
+[tool.ruff.lint]
 ignore = [
     "E402", # module level import not at top of file
 ]
@@ -40,6 +39,6 @@ select = [
     "UP", # pyupgrade
 ]
 
-[tool.ruff.format] # https://docs.astral.sh/ruff/settings/#format
+[tool.ruff.format]
 docstring-code-line-length = 100
 quote-style                = "double" # 引號風格，雙引號是預設值，這裡只是明示這個設定

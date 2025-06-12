@@ -79,13 +79,31 @@ TEST_F(WebotsApiTest, MotorApi)
   std::uniform_real_distribution<> dis(0, 1);
   double position = min_pos + (max_pos - min_pos) * dis(gen);
   ASSERT_TRUE(motor->SetPosition(motor_name, position));
-
-  for (int i = 0; i < 10; ++i) {
-    ASSERT_TRUE(robot->Step(32));
-  }
+  ASSERT_TRUE(robot->Step(500));
 
   double updated_value = position_sensor->GetValue(pos_sensor_name);
   ASSERT_NEAR(updated_value, position, 0.01);
+}
+
+TEST_F(WebotsApiTest, MotorSpeedApi)
+{
+  std::string motor_name = "linear motor";
+  std::string pos_sensor_name = "linear motor sensor";
+
+  // Enable position sensor
+  ASSERT_TRUE(position_sensor->Enable(pos_sensor_name, 32));
+
+  // Set initial position to 0.1
+  ASSERT_TRUE(motor->SetPosition(motor_name, 0.1));
+  ASSERT_TRUE(robot->Step(320));
+
+  // Set velocity to 0.5 and step simulation
+  ASSERT_TRUE(motor->SetVelocity(motor_name, 0.5));
+  ASSERT_TRUE(robot->Step(600));
+
+  // Get position sensor value and check if it's near max position (0.2)
+  double value = position_sensor->GetValue(pos_sensor_name);
+  ASSERT_NEAR(value, 0.2, 0.05);
 }
 
 TEST_F(WebotsApiTest, DistanceSensorApi)
@@ -115,9 +133,8 @@ TEST_F(WebotsApiTest, DistanceSensorApi)
   for (size_t i = 0; i < target_positions.size(); ++i) {
     double target_pos = target_positions[i];
     ASSERT_TRUE(motor->SetPosition(motor_name, target_pos));
-    for (int j = 0; j < 10; ++j) {
-      ASSERT_TRUE(robot->Step(32));
-    }
+    ASSERT_TRUE(robot->Step(500));
+
     double pos_value = position_sensor->GetValue(pos_sensor_name);
     ASSERT_NEAR(pos_value, target_pos, 0.01);
 

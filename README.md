@@ -20,13 +20,13 @@ If you have no robot description file, `descriptions` folder offer some basic on
 ## build
 
 ```bash
-poetry run python -m grpc_tools.protoc -I ./protos --python_out=./generated --pyi_out=./generated --grpc_python_out=./generated ./protos/*.proto
+uv run python -m grpc_tools.protoc -I ./protos --python_out=./generated --pyi_out=./generated --grpc_python_out=./generated ./protos/*.proto
 ```
 
 or generate document by [protoc-gen-doc](https://github.com/pseudomuto/protoc-gen-doc) plugin at the same time
 
 ```bash
-poetry run python -m grpc_tools.protoc -I ./protos --python_out=./generated --pyi_out=./generated --grpc_python_out=./generated --doc_out=./doc --doc_opt=html,index.html ./protos/*.proto
+uv run python -m grpc_tools.protoc -I ./protos --python_out=./generated --pyi_out=./generated --grpc_python_out=./generated --doc_out=./doc --doc_opt=html,index.html ./protos/*.proto
 ```
 
 reflection tool to help you list service
@@ -37,7 +37,7 @@ reflection tool to help you list service
 
 ```bash
 export WEBOTS_HOME=/usr/local/webots
-poetry run "${WEBOTS_HOME}/webots-controller" --robot-name='Picker' ./webots_grpc/server.py
+uv run "${WEBOTS_HOME}/webots-controller" --robot-name='Picker' ./webots_grpc/server.py
 ```
 
 ### for windows
@@ -46,7 +46,7 @@ If you use MSYS2 [as state](https://cyberbotics.com/doc/guide/compiling-controll
 
 > I don't find out way to integrate `WEBOTS_HOME` yet
 
-Or using poetry directly config python path,
+Or using uv directly config python path,
 
 ```ini
 ; .env
@@ -62,9 +62,9 @@ PYTHONPATH=C:\Program Files\Webots\lib\controller\python
 
 `& "C:\Program Files\Webots\msys64\mingw64\bin\webots-controller.exe" --robot-name='Picker' picker_cntrl_gateway.py`
 
-`poetry run "C:\Program Files\Webots\msys64\mingw64\bin\webots-controller.exe" --robot-name='Picker' .\webots_grpc\server.py`
+`uv run "C:\Program Files\Webots\msys64\mingw64\bin\webots-controller.exe" --robot-name='Picker' .\webots_grpc\server.py`
 
-`poetry run python -m tests.client`
+`uv run python -m tests.client`
 
 ### CPP
 

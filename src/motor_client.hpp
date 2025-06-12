@@ -17,6 +17,9 @@ public:
   // Set motor position
   bool SetPosition(const std::string& motor_name, double position);
 
+  // Set motor velocity
+  bool SetVelocity(const std::string& motor_name, double velocity);
+
   // Get motor minimum position
   double GetMinPosition(const std::string& motor_name);
 

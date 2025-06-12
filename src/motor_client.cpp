@@ -29,6 +29,24 @@ MotorClient::SetPosition(const std::string& motor_name, double position)
   return true; // No success field in google::protobuf::Empty
 }
 
+bool
+MotorClient::SetVelocity(const std::string& motor_name, double velocity)
+{
+  webots::SetVelocityRequest request;
+  request.set_name(motor_name);
+  request.set_velocity(velocity);
+
+  google::protobuf::Empty response; // Use google::protobuf::Empty
+  grpc::ClientContext context;
+
+  grpc::Status status = stub_->SetVelocity(&context, request, &response);
+  if (!status.ok()) {
+    std::cerr << "Error in SetVelocity: " << status.error_message() << std::endl;
+    return false;
+  }
+  return true; // No success field in google::protobuf::Empty
+}
+
 double
 MotorClient::GetMinPosition(const std::string& motor_name)
 {

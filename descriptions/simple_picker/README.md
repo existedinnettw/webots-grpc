@@ -7,7 +7,7 @@ You can generate webots proto by following commands. For more details, please re
 or more details:
 
 ```bash
-poetry run python -m urdf2webots.importer --input=picker_fine.urdf --output=build/picker.proto
+uv run python -m urdf2webots.importer --input=picker_fine.urdf --output=build/picker.proto
 cp -r build/* ~/Documents/webots_tutor/protos/
 ```
 

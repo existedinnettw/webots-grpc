@@ -61,6 +61,8 @@ class MotorService(motor_pb2_grpc.MotorServiceServicer):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Motor '{request.name}' not found.")
             return Empty()
+        # https://cyberbotics.com/doc/reference/motor?tab-language=python#velocity-control
+        motor.setPosition(float("inf"))  # Set position to infinity for velocity control
         motor.setVelocity(request.velocity)
         return Empty()
 
