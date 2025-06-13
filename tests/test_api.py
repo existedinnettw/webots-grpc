@@ -122,6 +122,17 @@ def test_motor_api(robot_stub, motor_stub, position_sensor_stub):
     assert pytest.approx(updated_value, 0.01) == position
 
 
+def test_motor_limit_api(robot_stub, motor_stub, position_sensor_stub):
+    motor_name = "linear motor"
+
+    max_pos = motor_stub.GetMaxPosition(motor_pb2.MotorRequest(name=motor_name))
+    min_pos = motor_stub.GetMinPosition(motor_pb2.MotorRequest(name=motor_name))
+    with check:
+        check.almost_equal(max_pos.max_position, 0.200, rel=1e-6)
+    with check:
+        check.almost_equal(min_pos.min_position, -0.000, rel=1e-6)
+
+
 def test_motor_speed_api(robot_stub, motor_stub, position_sensor_stub):
     motor_name = "linear motor"
     pos_sensor_name = "linear motor sensor"
@@ -130,12 +141,30 @@ def test_motor_speed_api(robot_stub, motor_stub, position_sensor_stub):
     motor_stub.SetPosition(motor_pb2.SetPositionRequest(name=motor_name, position=0.1))
     assert robot_stub.Step(robot_pb2.StepRequest(time_step=320)).success
 
+    """
+    TODO
+    Following test actually fails, motor limit not work when SetPosition to -inf,
+     which is bug from webots.
+    Current hotfix is to limit the position value first in motor_service.py.
+    """
+    motor_stub.SetPosition(motor_pb2.SetPositionRequest(name=motor_name, position=float("-inf")))
     motor_stub.SetVelocity(motor_pb2.SetVelocityRequest(name=motor_name, velocity=0.5))
-    assert robot_stub.Step(robot_pb2.StepRequest(time_step=600)).success
+    assert robot_stub.Step(robot_pb2.StepRequest(time_step=500)).success
     value = position_sensor_stub.GetValue(
         position_sensor_pb2.PositionSensorRequest(name=pos_sensor_name)
     ).value
-    assert pytest.approx(value, 0.05) == 0.2  # max pos
+    with check:
+        check.almost_equal(value, 0.00, rel=0.05)  # min pos
+
+    # https://cyberbotics.com/doc/reference/motor?tab-language=python#velocity-control
+    motor_stub.SetPosition(motor_pb2.SetPositionRequest(name=motor_name, position=float("inf")))
+    motor_stub.SetVelocity(motor_pb2.SetVelocityRequest(name=motor_name, velocity=0.5))
+    assert robot_stub.Step(robot_pb2.StepRequest(time_step=500)).success
+    value = position_sensor_stub.GetValue(
+        position_sensor_pb2.PositionSensorRequest(name=pos_sensor_name)
+    ).value
+    with check:
+        check.almost_equal(value, 0.201, rel=0.05)  # max pos
 
 
 def test_distance_sensor_api(robot_stub, motor_stub, position_sensor_stub, distance_sensor_stub):

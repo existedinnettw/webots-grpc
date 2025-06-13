@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <random>
 #include <string>
@@ -97,13 +98,22 @@ TEST_F(WebotsApiTest, MotorSpeedApi)
   ASSERT_TRUE(motor->SetPosition(motor_name, 0.1));
   ASSERT_TRUE(robot->Step(320));
 
-  // Set velocity to 0.5 and step simulation
-  ASSERT_TRUE(motor->SetVelocity(motor_name, 0.5));
-  ASSERT_TRUE(robot->Step(600));
+  {
+    // https://cyberbotics.com/doc/reference/motor?tab-language=python#velocity-control
+    ASSERT_TRUE(motor->SetPosition(motor_name, -std::numeric_limits<double>::infinity()));
+    ASSERT_TRUE(motor->SetVelocity(motor_name, 0.5));
+    ASSERT_TRUE(robot->Step(600));
+    double value = position_sensor->GetValue(pos_sensor_name);
+    ASSERT_NEAR(value, 0.0, 0.05);
+  }
 
-  // Get position sensor value and check if it's near max position (0.2)
-  double value = position_sensor->GetValue(pos_sensor_name);
-  ASSERT_NEAR(value, 0.2, 0.05);
+  {
+    ASSERT_TRUE(motor->SetPosition(motor_name, std::numeric_limits<double>::infinity()));
+    ASSERT_TRUE(motor->SetVelocity(motor_name, 0.5));
+    ASSERT_TRUE(robot->Step(600));
+    double value = position_sensor->GetValue(pos_sensor_name);
+    ASSERT_NEAR(value, 0.2, 0.05);
+  }
 }
 
 TEST_F(WebotsApiTest, DistanceSensorApi)

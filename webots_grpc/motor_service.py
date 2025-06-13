@@ -52,17 +52,26 @@ class MotorService(motor_pb2_grpc.MotorServiceServicer):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Motor '{request.name}' not found.")
             return Empty()
-        motor.setPosition(request.position)
+
+        # hotfix webots minpoisition not work (maxposition works correctly)
+        new_position = max(request.position, motor.getMinPosition())
+        motor.setPosition(new_position)
+
+        # motor.setPosition(request.position)
         return Empty()
 
     def SetVelocity(self, request, context):
+        """ """
         motor = self._get_motor(request.name, context)
         if motor is None:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Motor '{request.name}' not found.")
             return Empty()
         # https://cyberbotics.com/doc/reference/motor?tab-language=python#velocity-control
-        motor.setPosition(float("inf"))  # Set position to infinity for velocity control
+        # motor.setPosition(float("inf"))  # Set position to infinity for velocity control
+        # https://cyberbotics.com/doc/reference/motor#field-summary
+        # The value should always be positive (the default is 10).
+        assert request.velocity >= 0, "Velocity must be non-negative."
         motor.setVelocity(request.velocity)
         return Empty()
 
