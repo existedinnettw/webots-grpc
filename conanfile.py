@@ -23,10 +23,6 @@ class webots_grpcRecipe(ConanFile):
     default_options = {
         "shared": False,
         "fPIC": True,
-        # https://github.com/conan-io/conan/issues/15580#issuecomment-1922528404
-        "abseil/*:shared": False,
-        "protobuf/*:shared": False,  # Force protobuf to build as static
-        "grpc/*:shared": False,  # If built as shared protobuf must be shared as well.
     }
 
     # Sources are located in the same place as this recipe, copy them to the recipe
@@ -34,19 +30,6 @@ class webots_grpcRecipe(ConanFile):
 
     def validate(self):
         check_min_cppstd(self, "20")  # grpc
-        # Validate that dependencies are built as static libraries
-        if self.dependencies["abseil"].options.shared:
-            raise ConanInvalidConfiguration(
-                "abseil must be built as a static library (shared=False)."
-            )
-        if self.dependencies["protobuf"].options.shared:
-            raise ConanInvalidConfiguration(
-                "protobuf must be built as a static library (shared=False)."
-            )
-        if self.dependencies["grpc"].options.shared:
-            raise ConanInvalidConfiguration(
-                "grpc must be built as a static library (shared=False)."
-            )
 
     def config_options(self):
         if self.settings.os == "Windows":
@@ -56,18 +39,16 @@ class webots_grpcRecipe(ConanFile):
         if self.options.shared:
             self.options.rm_safe("fPIC")
 
-        # [Defining options for dependencies in conanfile.py recipes doesn’t work](https://docs.conan.io/2/knowledge/faq.html#defining-options-for-dependencies-in-conanfile-py-recipes-doesn-t-work)
-        # Force dependencies to build as static libraries
-        self.options["abseil/*"].shared = False
-        self.options["protobuf/*"].shared = False
-        self.options["grpc/*"].shared = False
-
     def requirements(self):
         self.requires("grpc/1.67.1", transitive_headers=True, transitive_libs=True)
         self.requires("protobuf/5.27.0", transitive_headers=True)  # must matched grpc
 
         # build
         self.tool_requires("cmake/[>=3.14 <=4]")
+        # protoc compiler needs to run on host architecture during cross-compilation
+        self.tool_requires("protobuf/5.27.0")
+        # grpc_cpp_plugin needs to run on host architecture during cross-compilation
+        self.tool_requires("grpc/1.67.1")
 
         # test
         self.test_requires("gtest/[~1]")
