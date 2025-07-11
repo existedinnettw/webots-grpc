@@ -71,9 +71,11 @@ TEST_F(WebotsApiTest, MotorApi)
   std::string pos_sensor_name = motor->GetPositionSensor(motor_name);
   ASSERT_EQ(pos_sensor_name, "linear motor sensor");
 
+  ASSERT_TRUE(position_sensor->Disable(pos_sensor_name));
+  ASSERT_FALSE(std::isfinite(position_sensor->GetValue(pos_sensor_name)));
   ASSERT_TRUE(position_sensor->Enable(pos_sensor_name, 32));
-  double value = position_sensor->GetValue(pos_sensor_name);
-  ASSERT_TRUE(std::isfinite(value));
+  ASSERT_TRUE(robot->Step(32));
+  ASSERT_TRUE(std::isfinite(position_sensor->GetValue(pos_sensor_name)));
 
   std::random_device rd;
   std::mt19937 gen(rd());

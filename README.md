@@ -2,7 +2,7 @@
 
 This project is a simple gateway convert from gRPC to webots socket IPC API. It follow some rules.
 
-* extern control
+* extern controller
 * synchronous simulation
 
 ```mermaid
@@ -13,11 +13,11 @@ graph LR
     B <-->|gRPC| C[CPP gRPC client app]
 ```
 
-### tree
+## run
 
-If you have no robot description file, `descriptions` folder offer some basic one.
+### server
 
-## build
+Create service from proto file,
 
 ```bash
 uv run python -m grpc_tools.protoc -I ./protos --python_out=./generated --pyi_out=./generated --grpc_python_out=./generated ./protos/*.proto
@@ -29,18 +29,16 @@ or generate document by [protoc-gen-doc](https://github.com/pseudomuto/protoc-ge
 uv run python -m grpc_tools.protoc -I ./protos --python_out=./generated --pyi_out=./generated --grpc_python_out=./generated --doc_out=./doc --doc_opt=html,index.html ./protos/*.proto
 ```
 
-reflection tool to help you list service
-`grpcurl -plaintext localhost:50051 list`
-`grpcurl -plaintext localhost:50051 describe device.DeviceService`
+#### execution on linux
 
-### for linux
+> Modify your robot name plz.
 
 ```bash
 export WEBOTS_HOME=/usr/local/webots
-uv run "${WEBOTS_HOME}/webots-controller" --robot-name='Picker' ./webots_grpc/server.py
+uv run "${WEBOTS_HOME}/webots-controller" --robot-name='robot' ./webots_grpc/server.py
 ```
 
-### for windows
+#### execution on windows
 
 If you use MSYS2 [as state](https://cyberbotics.com/doc/guide/compiling-controllers-in-a-terminal#windows), `export WEBOTS_HOME=C:\Program Files\Webots`
 
@@ -53,29 +51,22 @@ Or using uv directly config python path,
 PYTHONPATH=C:\Program Files\Webots\lib\controller\python
 ```
 
+`uv run "C:\Program Files\Webots\msys64\mingw64\bin\webots-controller.exe" --robot-name='robot' .\webots_grpc\server.py`
 
-[extern controller](https://cyberbotics.com/doc/guide/running-extern-robot-controllers#launcher), e.g. 
+### client
 
-`& "C:\Program Files\Webots\msys64\mingw64\bin\webots-controller.exe" --help`
+There are cpp and python client API support with unittests, plz refer python test `tests/README.md` first.
 
-`& "C:\Program Files\Webots\msys64\mingw64\bin\webots-controller.exe" --robot-name='IRB 4600/40' xxx.py`
+#### PYTHON
 
-`& "C:\Program Files\Webots\msys64\mingw64\bin\webots-controller.exe" --robot-name='Picker' picker_cntrl_gateway.py`
+```bash
+uv run python -m pytest
+```
 
-`uv run "C:\Program Files\Webots\msys64\mingw64\bin\webots-controller.exe" --robot-name='Picker' .\webots_grpc\server.py`
+#### CPP
 
-`uv run python -m tests.client`
-
-### CPP
+Check cpp client test `src/tests`
 
 ```bash
 conan build . --build=missing
-```
-
-Aware that dependencies `protobuf`, `grpc`, `abseil` have to be static link, since `protoc` require static linked to work properly.
-
-If you encounter validation error, following command will help you explicitly set shared to false.
-
-```bash
-conan build . --build=missing -o protobuf/*:shared=False -o grpc/*:shared=False -o abseil/*:shared=False
 ```
