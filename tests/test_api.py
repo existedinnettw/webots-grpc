@@ -52,6 +52,15 @@ def distance_sensor_stub(grpc_channel):
     return distance_sensor_pb2_grpc.DistanceSensorServiceStub(grpc_channel)
 
 
+def test_reflection(grpc_channel):
+    reflection_db = ProtoReflectionDescriptorDatabase(grpc_channel)
+    services = reflection_db.get_services()
+    print(f"found services: {services}")
+
+    # Check if the robot service is available
+    assert "webots.RobotService" in services, "Robot service not found in reflection response"
+
+
 def test_get_robot_name(robot_stub):
     response = robot_stub.GetRobotName(empty_pb2.Empty())
     assert response.name  # Should not be empty
