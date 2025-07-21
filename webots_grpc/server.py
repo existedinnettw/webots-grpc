@@ -51,13 +51,6 @@ class LoggingInterceptor(grpc.ServerInterceptor):
         # Check if the call is unary-unary, unary-stream, etc.
         if handler is None:
             return None
-        if hasattr(handler, "unary_unary"):
-            return grpc.unary_unary_rpc_method_handler(
-                lambda req, ctx: log_request(req, ctx),
-                request_deserializer=handler.request_deserializer,
-                response_serializer=handler.response_serializer,
-            )
-        # For other types, add similar wrappers as needed
         return handler
 
 
