@@ -1,11 +1,10 @@
+import generated.position_sensor_pb2 as position_sensor_pb2
+import generated.position_sensor_pb2_grpc as position_sensor_pb2_grpc
+import generated.sensor_pb2 as sensor_pb2
 import grpc
 from controller.position_sensor import PositionSensor
 from controller.robot import Robot
 from google.protobuf.empty_pb2 import Empty  # Import Empty for empty responses
-
-import generated.position_sensor_pb2 as position_sensor_pb2
-import generated.position_sensor_pb2_grpc as position_sensor_pb2_grpc
-import generated.sensor_pb2 as sensor_pb2
 
 
 class PositionSensorService(position_sensor_pb2_grpc.PositionSensorServiceServicer):

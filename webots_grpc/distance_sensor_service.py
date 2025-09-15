@@ -1,11 +1,10 @@
+import generated.distance_sensor_pb2 as distance_sensor_pb2
+import generated.distance_sensor_pb2_grpc as distance_sensor_pb2_grpc
+import generated.sensor_pb2 as sensor_pb2
 import grpc
 from controller.distance_sensor import DistanceSensor
 from controller.robot import Robot
 from google.protobuf.empty_pb2 import Empty  # Import Empty for empty responses
-
-import generated.distance_sensor_pb2 as distance_sensor_pb2
-import generated.distance_sensor_pb2_grpc as distance_sensor_pb2_grpc
-import generated.sensor_pb2 as sensor_pb2
 
 
 class DistanceSensorService(distance_sensor_pb2_grpc.DistanceSensorServiceServicer):

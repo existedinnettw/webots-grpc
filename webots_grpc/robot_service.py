@@ -1,9 +1,8 @@
-import grpc
-from controller.robot import Robot
-
 import generated.device_pb2 as device_pb2
 import generated.robot_pb2 as robot_pb2
 import generated.robot_pb2_grpc as robot_pb2_grpc
+import grpc
+from controller.robot import Robot
 
 
 class RobotService(robot_pb2_grpc.RobotServiceServicer):

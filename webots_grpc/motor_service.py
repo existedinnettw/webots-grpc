@@ -1,11 +1,10 @@
+import generated.device_pb2 as device_pb2
+import generated.motor_pb2 as motor_pb2
+import generated.motor_pb2_grpc as motor_pb2_grpc
 import grpc
 from controller.motor import Motor
 from controller.robot import Robot
 from google.protobuf.empty_pb2 import Empty  # Import Empty for empty responses
-
-import generated.device_pb2 as device_pb2
-import generated.motor_pb2 as motor_pb2
-import generated.motor_pb2_grpc as motor_pb2_grpc
 
 
 class MotorService(motor_pb2_grpc.MotorServiceServicer):

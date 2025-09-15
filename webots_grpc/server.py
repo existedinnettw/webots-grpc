@@ -3,19 +3,10 @@ import functools
 import os
 import sys
 import time
+from concurrent import futures
 
 # import subprocess
 from multiprocessing import Process
-
-# grpcio-tools.protoc python import paths should be relative to a specified root directory #29459
-sys.path.append(os.path.join(os.path.dirname(__file__), "../generated"))
-from concurrent import futures
-
-import grpc
-from controller.robot import Robot
-
-# from google.protobuf.message import Message
-from grpc_reflection.v1alpha import reflection
 
 # Import the generated gRPC modules
 import generated.device_pb2 as device_pb2
@@ -28,6 +19,11 @@ import generated.position_sensor_pb2 as position_sensor_pb2
 import generated.position_sensor_pb2_grpc as position_sensor_pb2_grpc
 import generated.robot_pb2 as robot_pb2
 import generated.robot_pb2_grpc as robot_pb2_grpc
+import grpc
+from controller.robot import Robot
+
+# from google.protobuf.message import Message
+from grpc_reflection.v1alpha import reflection
 
 # Import the service implementations
 from webots_grpc.device_service import DeviceService

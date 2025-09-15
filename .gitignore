@@ -166,8 +166,8 @@ cython_debug/
 
 # webots
 descriptions/**/*.proto
-generated/*
-!generated/__init__.py
+**/generated/*
+!**/generated/__init__.py
 doc/*.html
 
 *Presets.json

@@ -1,16 +1,25 @@
 [project]
 authors         = [{ name = "insleker", email = "bkinnightskytw@gmail.com" }]
-dependencies    = ["grpcio>=1.71.0,<2", "grpcio-reflection>=1.0.0,<2"]
+dependencies    = [
+    "grpcio>=1.71.0,<2",
+    "grpcio-reflection>=1.0.0,<2",
+    # Webots doesn't wrap API as package
+    # https://github.com/astral-sh/uv/issues/11175
+    # "controller",
+    # "controller @ file:///${WEBOTS_HOME}/lib/controller/python",
+]
 description     = ""
 name            = "webots-grpc"
 readme          = "README.md"
 requires-python = ">=3.10,<3.14"
 version         = "0.1.2"
 
+# TODO: move to `betterproto`
 [dependency-groups]
 dev = [
     "grpcio-tools>=1.71.0,<2",
     "nuitka>=2.7.14",
+    "protoletariat>=3.3.10",
     "pytest>=8.4.0,<9",
     "pytest-check>=2.5.3,<3",
     "ruff>=0.11.5,<0.12",
@@ -20,6 +29,12 @@ dev = [
 [build-system]
 build-backend = "hatchling.build"
 requires      = ["hatchling"]
+
+[tool.uv]
+package = true
+
+# [tool.uv.sources]
+# controller = { path = "${WEBOTS_HOME}/lib/controller/python", package = false  }
 
 [tool.ruff]
 exclude     = ["**/migrations/", "**/manage.py"]

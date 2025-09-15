@@ -22,18 +22,29 @@ graph LR
 Create service from proto file,
 
 ```bash
-uv run python -m grpc_tools.protoc -I ./protos --python_out=./generated --pyi_out=./generated --grpc_python_out=./generated ./protos/*.proto
+uv run python -m grpc_tools.protoc -I ./protos --python_out=./webots_grpc/generated --pyi_out=./webots_grpc/generated --grpc_python_out=./webots_grpc/generated ./protos/*.proto
 ```
 
 or generate document by [protoc-gen-doc](https://github.com/pseudomuto/protoc-gen-doc) plugin at the same time
 
 ```bash
-uv run python -m grpc_tools.protoc -I ./protos --python_out=./generated --pyi_out=./generated --grpc_python_out=./generated --doc_out=./doc --doc_opt=html,index.html ./protos/*.proto
+uv run python -m grpc_tools.protoc -I ./protos --python_out=./webots_grpc/generated --pyi_out=./webots_grpc/generated --grpc_python_out=./webots_grpc/generated --doc_out=./doc --doc_opt=html,index.html ./protos/*.proto
 ```
 
-And if want to build exe file,(Not yet implemented)
+Fix python import issue
 
-`uv run python -m nuitka --onefile --assume-yes-for-downloads .\webots_grpc\server.py --jobs=8`
+```bash
+uv run protol --create-package --in-place --python-out ./webots_grpc/generated protoc --protoc-path "uv run python -m grpc_tools.protoc" --proto-path=./protos ./protos/*.proto
+```
+
+And if want to build exe file,
+
+> [Configure additional module search paths, like PYTHONPATH #9168](https://github.com/astral-sh/uv/issues/9168)
+> [option to specify a project root directory to be added to the python path](https://github.com/astral-sh/uv/issues/11175)
+
+```bash
+PYTHONPATH="${WEBOTS_HOME}/lib/controller/python" uv run python -m nuitka --include-module=controller --onefile --assume-yes-for-downloads ./webots_grpc/server.py --jobs=8
+```
 
 #### execution on linux
 
