@@ -13,7 +13,8 @@ from concurrent import futures
 
 import grpc
 from controller.robot import Robot
-from google.protobuf.message import Message
+
+# from google.protobuf.message import Message
 from grpc_reflection.v1alpha import reflection
 
 # Import the generated gRPC modules
@@ -41,11 +42,8 @@ class LoggingInterceptor(grpc.ServerInterceptor):
         method = handler_call_details.method
         print(f"[gRPC] Incoming call to method: {method}")
 
-        # This wrapper allows us to print the request message as well
-        def log_request(request: Message, context):
-            req_str = str(request).replace("\n", ", ")[:-2]
-            print(f"[gRPC]   args: {req_str}")
-            return continuation(handler_call_details).unary_unary(request, context)
+        # TODO: no good way to get args yet.
+        # print(f"[gRPC]   args: {request}")
 
         handler = continuation(handler_call_details)
         # Check if the call is unary-unary, unary-stream, etc.

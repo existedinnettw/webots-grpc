@@ -2,7 +2,7 @@
 
 This project is a simple gateway convert from gRPC to webots socket IPC API. It follow some rules.
 
-* extern controller
+* [webots extern controller](cyberbotics.com/doc/guide/running-extern-robot-controllers)
 * synchronous simulation
 
 ```mermaid
@@ -17,6 +17,8 @@ graph LR
 
 ### server
 
+#### build
+
 Create service from proto file,
 
 ```bash
@@ -28,6 +30,10 @@ or generate document by [protoc-gen-doc](https://github.com/pseudomuto/protoc-ge
 ```bash
 uv run python -m grpc_tools.protoc -I ./protos --python_out=./generated --pyi_out=./generated --grpc_python_out=./generated --doc_out=./doc --doc_opt=html,index.html ./protos/*.proto
 ```
+
+And if want to build exe file,(Not yet implemented)
+
+`uv run python -m nuitka --onefile --assume-yes-for-downloads .\webots_grpc\server.py --jobs=8`
 
 #### execution on linux
 

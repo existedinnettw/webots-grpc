@@ -18,7 +18,9 @@ class MotorService(motor_pb2_grpc.MotorServiceServicer):
     def __init__(self, robot: Robot):
         self.robot = robot
 
-    def _get_motor(self, motor_name, context) -> Motor:
+    from typing import Optional
+
+    def _get_motor(self, motor_name, context) -> Motor | None:
         motor = self.robot.getDevice(motor_name)
         if not isinstance(motor, Motor):
             context.set_code(grpc.StatusCode.NOT_FOUND)
@@ -32,13 +34,15 @@ class MotorService(motor_pb2_grpc.MotorServiceServicer):
         if motor is None:
             return motor_pb2.MotorResponse(
                 device=device_pb2.DeviceResponse(name=request.name, model="", node_type=0),
-                type=motor_pb2.MotorResponse.Type.UNKNOWN,
+                type=None,
             )
         wb_mot_type = motor.getType()
         if wb_mot_type == Motor.ROTATIONAL:
             motor_type = motor_pb2.MotorResponse.Type.ROTATIONAL
         elif wb_mot_type == Motor.LINEAR:
             motor_type = motor_pb2.MotorResponse.Type.LINEAR
+        else:
+            motor_type = None
         return motor_pb2.MotorResponse(
             device=device_pb2.DeviceResponse(
                 name=request.name, model=motor.getModel(), node_type=motor.getNodeType()
@@ -81,6 +85,12 @@ class MotorService(motor_pb2_grpc.MotorServiceServicer):
             return motor_pb2.GetVelocityResponse(velocity=0.0)
         return motor_pb2.GetVelocityResponse(velocity=motor.getVelocity())
 
+    def GetMaxVelocity(self, request, context):
+        motor = self._get_motor(request.name, context)
+        if motor is None:
+            return motor_pb2.GetVelocityResponse(velocity=0.0)
+        return motor_pb2.GetVelocityResponse(velocity=motor.getMaxVelocity())
+
     def SetTorque(self, request, context):
         motor = self._get_motor(request.name, context)
         if motor is None:
@@ -90,11 +100,11 @@ class MotorService(motor_pb2_grpc.MotorServiceServicer):
         motor.setTorque(request.torque)
         return Empty()
 
-    def GetTorque(self, request, context):
+    def GetTorqueFeedback(self, request, context):
         motor = self._get_motor(request.name, context)
         if motor is None:
-            return motor_pb2.GetTorqueResponse(torque=0.0)
-        return motor_pb2.GetTorqueResponse(torque=motor.getTorqueFeedback())
+            return motor_pb2.GetTorqueFeedbackResponse(torque=0.0)
+        return motor_pb2.GetTorqueFeedbackResponse(torque=motor.getTorqueFeedback())
 
     def GetMinPosition(self, request, context):
         motor = self._get_motor(request.name, context)

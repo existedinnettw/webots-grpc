@@ -28,6 +28,9 @@ service MotorService {
   // Retrieves the current velocity of the motor.
   rpc GetVelocity(MotorRequest) returns (GetVelocityResponse);
 
+  // Retrieves the maximum velocity of the motor.
+  rpc GetMaxVelocity(MotorRequest) returns (GetVelocityResponse);
+
   // Sets the torque of the motor.
   // `name`: The name of the motor.
   // `torque`: The target torque in Nm.

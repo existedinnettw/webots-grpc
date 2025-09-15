@@ -173,3 +173,7 @@ doc/*.html
 *Presets.json
 tests/worlds/.linear_motor.jpg
 *.wbproj
+
+*.exe
+*.build/
+*.dist/
