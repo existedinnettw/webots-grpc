@@ -1,28 +1,26 @@
 import os
 import sys
 
-import pytest  # noqa: F401
-from pytest_check import check
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "../generated"))
-
 import grpc
+import pytest  # noqa: F401
 from google.protobuf import empty_pb2
 from grpc_reflection.v1alpha.proto_reflection_descriptor_database import (
     ProtoReflectionDescriptorDatabase,
 )
+from pytest_check.check_functions import almost_equal
+from pytest_check.context_manager import check
 
-import generated.device_pb2 as device_pb2
-import generated.distance_sensor_pb2 as distance_sensor_pb2
-import generated.distance_sensor_pb2_grpc as distance_sensor_pb2_grpc
-import generated.motor_pb2 as motor_pb2
-import generated.motor_pb2_grpc as motor_pb2_grpc
-import generated.position_sensor_pb2 as position_sensor_pb2
-import generated.position_sensor_pb2_grpc as position_sensor_pb2_grpc
-import generated.robot_pb2 as robot_pb2
-import generated.robot_pb2_grpc as robot_pb2_grpc
-import generated.sensor_pb2 as sensor_pb2
-import generated.sensor_pb2_grpc as sensor_pb2_grpc
+import webots_grpc.generated.device_pb2 as device_pb2
+import webots_grpc.generated.distance_sensor_pb2 as distance_sensor_pb2
+import webots_grpc.generated.distance_sensor_pb2_grpc as distance_sensor_pb2_grpc
+import webots_grpc.generated.motor_pb2 as motor_pb2
+import webots_grpc.generated.motor_pb2_grpc as motor_pb2_grpc
+import webots_grpc.generated.position_sensor_pb2 as position_sensor_pb2
+import webots_grpc.generated.position_sensor_pb2_grpc as position_sensor_pb2_grpc
+import webots_grpc.generated.robot_pb2 as robot_pb2
+import webots_grpc.generated.robot_pb2_grpc as robot_pb2_grpc
+import webots_grpc.generated.sensor_pb2 as sensor_pb2
+import webots_grpc.generated.sensor_pb2_grpc as sensor_pb2_grpc
 
 
 @pytest.fixture(scope="module")
@@ -98,9 +96,9 @@ def test_motor_api(robot_stub, motor_stub, position_sensor_stub):
     max_pos = motor_stub.GetMaxPosition(motor_request).max_position
     min_pos = motor_stub.GetMinPosition(motor_request).min_position
     with check:
-        check.almost_equal(max_pos, 0.2, rel=1e-6)
+        almost_equal(max_pos, 0.2, rel=1e-6)
     with check:
-        check.almost_equal(min_pos, 0, rel=1e-6)
+        almost_equal(min_pos, 0, rel=1e-6)
 
     pos_sensor_name = motor_stub.GetPositionSensor(motor_request).position_sensor_name
     assert pos_sensor_name
@@ -137,9 +135,9 @@ def test_motor_limit_api(robot_stub, motor_stub, position_sensor_stub):
     max_pos = motor_stub.GetMaxPosition(motor_pb2.MotorRequest(name=motor_name))
     min_pos = motor_stub.GetMinPosition(motor_pb2.MotorRequest(name=motor_name))
     with check:
-        check.almost_equal(max_pos.max_position, 0.200, rel=1e-6)
+        almost_equal(max_pos.max_position, 0.200, rel=1e-6)
     with check:
-        check.almost_equal(min_pos.min_position, -0.000, rel=1e-6)
+        almost_equal(min_pos.min_position, -0.000, rel=1e-6)
 
 
 def test_motor_speed_api(robot_stub, motor_stub, position_sensor_stub):
@@ -149,6 +147,9 @@ def test_motor_speed_api(robot_stub, motor_stub, position_sensor_stub):
     position_sensor_stub.Enable(sensor_pb2.EnableRequest(name=pos_sensor_name, sampling_period=32))
     motor_stub.SetPosition(motor_pb2.SetPositionRequest(name=motor_name, position=0.1))
     assert robot_stub.Step(robot_pb2.StepRequest(time_step=320)).success
+    max_velocity = motor_stub.GetMaxVelocity(motor_pb2.MotorRequest(name=motor_name))
+    with check:
+        almost_equal(max_velocity.velocity, 10.0, rel=1e-6)  # from robot model
 
     """
     TODO
@@ -158,12 +159,15 @@ def test_motor_speed_api(robot_stub, motor_stub, position_sensor_stub):
     """
     motor_stub.SetPosition(motor_pb2.SetPositionRequest(name=motor_name, position=float("-inf")))
     motor_stub.SetVelocity(motor_pb2.SetVelocityRequest(name=motor_name, velocity=0.5))
+    motor_velocity = motor_stub.GetVelocity(motor_pb2.MotorRequest(name=motor_name))
+    with check:
+        almost_equal(motor_velocity.velocity, 0.5, rel=1e-6)
     assert robot_stub.Step(robot_pb2.StepRequest(time_step=500)).success
     value = position_sensor_stub.GetValue(
         position_sensor_pb2.PositionSensorRequest(name=pos_sensor_name)
     ).value
     with check:
-        check.almost_equal(value, 0.00, rel=0.05)  # min pos
+        almost_equal(value, 0.00, rel=0.05)  # min pos
 
     # https://cyberbotics.com/doc/reference/motor?tab-language=python#velocity-control
     motor_stub.SetPosition(motor_pb2.SetPositionRequest(name=motor_name, position=float("inf")))
@@ -173,7 +177,7 @@ def test_motor_speed_api(robot_stub, motor_stub, position_sensor_stub):
         position_sensor_pb2.PositionSensorRequest(name=pos_sensor_name)
     ).value
     with check:
-        check.almost_equal(value, 0.201, rel=0.05)  # max pos
+        almost_equal(value, 0.201, rel=0.05)  # max pos
 
 
 def test_distance_sensor_api(robot_stub, motor_stub, position_sensor_stub, distance_sensor_stub):

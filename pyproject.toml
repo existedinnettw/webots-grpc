@@ -21,7 +21,7 @@ dev = [
     "nuitka>=2.7.14",
     "protoletariat>=3.3.10",
     "pytest>=8.4.0,<9",
-    "pytest-check>=2.5.3,<3",
+    "pytest-check>=2.5.4,<3",
     "ruff>=0.11.5,<0.12",
     "urdf2webots>=2023.1.0,<2024",
 ]

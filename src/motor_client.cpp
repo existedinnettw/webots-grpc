@@ -48,7 +48,7 @@ MotorClient::SetVelocity(const std::string& motor_name, double velocity)
 }
 
 double
-MotorClient::GetVelocity(const std::string& motor_name, double& velocity)
+MotorClient::GetVelocity(const std::string& motor_name)
 {
   webots::MotorRequest request; // Use MotorRequest
   request.set_name(motor_name);
@@ -61,12 +61,11 @@ MotorClient::GetVelocity(const std::string& motor_name, double& velocity)
     std::cerr << "Error in GetVelocity: " << status.error_message() << std::endl;
     return false;
   }
-  velocity = response.velocity();
-  return velocity;
+  return response.velocity();
 }
 
 double
-MotorClient::GetMaxVelocity(const std::string& motor_name, double& max_velocity)
+MotorClient::GetMaxVelocity(const std::string& motor_name)
 {
   webots::MotorRequest request; // Use MotorRequest
   request.set_name(motor_name);
@@ -74,13 +73,12 @@ MotorClient::GetMaxVelocity(const std::string& motor_name, double& max_velocity)
   webots::GetVelocityResponse response;
   grpc::ClientContext context;
 
-  grpc::Status status = stub_->GetVelocity(&context, request, &response);
+  grpc::Status status = stub_->GetMaxVelocity(&context, request, &response);
   if (!status.ok()) {
     std::cerr << "Error in GetMaxVelocity: " << status.error_message() << std::endl;
     return false;
   }
-  max_velocity = response.velocity();
-  return max_velocity;
+  return response.velocity();
 }
 
 double

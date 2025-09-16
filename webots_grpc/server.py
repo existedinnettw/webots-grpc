@@ -1,7 +1,6 @@
 import argparse
 import functools
-import os
-import sys
+import signal
 import time
 from concurrent import futures
 
@@ -82,16 +81,40 @@ def serve(port=50051, enable_log=False):
 
     print(f"gRPC server is running on port {port}...")
     server.start()
+
+    def signal_handler(signum, frame):
+        print(f"Received signal {signum}, shutting down server gracefully...")
+        server.stop(grace=5)  # 5 seconds grace period
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
     server.wait_for_termination()
 
 
 def watchdog(func):
     """Parent process that monitors and restarts the gRPC server subprocess."""
-    while True:
+    stop_flag = False
+
+    def signal_handler(signum, frame):
+        nonlocal stop_flag
+        print(f"Received signal '{signal.strsignal(signum)}'...")
+        stop_flag = True
+        if "p" in locals() and p.is_alive():
+            p.terminate()
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
+    while not stop_flag:
         print("Starting gRPC server subprocess...")
         p = Process(target=func)
         p.start()
         result = p.join()
+
+        if stop_flag:
+            print("Watchdog shutting down.")
+            break
 
         if result == 0:
             print("gRPC server subprocess exited normally.")
