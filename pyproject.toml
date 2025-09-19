@@ -7,12 +7,16 @@ dependencies    = [
     # https://github.com/astral-sh/uv/issues/11175
     # "controller",
     # "controller @ file:///${WEBOTS_HOME}/lib/controller/python",
+    "python-dotenv>=1.1.1",
 ]
 description     = ""
 name            = "webots-grpc"
 readme          = "README.md"
 requires-python = ">=3.10,<3.14"
 version         = "0.1.2"
+
+[project.scripts]
+webots-grpc-gateway = "webots_grpc.__main__:main"
 
 # TODO: move to `betterproto`
 [dependency-groups]

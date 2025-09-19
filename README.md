@@ -2,7 +2,7 @@
 
 This project is a simple gateway convert from gRPC to webots socket IPC API. It follow some rules.
 
-* [webots extern controller](cyberbotics.com/doc/guide/running-extern-robot-controllers)
+* [webots extern controller](https://cyberbotics.com/doc/guide/running-extern-robot-controllers)
 * synchronous simulation
 
 ```mermaid
@@ -16,6 +16,15 @@ graph LR
 ## run
 
 ### server
+
+for the most simple way
+
+```bash
+uv run python -m webots_grpc --robot-name="{ROBOT_NAME}"
+uv run webots-grpc-gateway --robot-name="{ROBOT_NAME}"
+# pipx run --spec . webots-grpc-gateway --robot-name="{ROBOT_NAME}"
+# uvx --from git+https://github.com/existedinnettw/webots-grpc.git webots-grpc-gateway --robot-name="{ROBOT_NAME}"
+```
 
 #### build
 
