@@ -17,7 +17,7 @@ name = "webots-grpc"
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
 urls = { Homepage = "https://github.com/existedinnettw/webots-grpc", Repository = "https://github.com/existedinnettw/webots-grpc" }
-version = "0.1.2"
+version = "0.1.3"
 
 [project.scripts]
 webots-grpc-gateway = "webots_grpc.__main__:main"

@@ -6,7 +6,7 @@ from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
 
 class webots_grpcRecipe(ConanFile):
     name = "webots-grpc"
-    version = "0.1.2"
+    version = "0.1.3"
     package_type = "library"
 
     # Optional metadata
