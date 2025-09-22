@@ -13,11 +13,18 @@ graph LR
     B <-->|gRPC| C[CPP gRPC client app]
 ```
 
-## run
-
-### server
+## run gateway (gRPC server)
 
 for the most simple way
+
+```bash
+export WEBOTS_HOME=/usr/local/webots
+uvx --from webots-grpc webots-grpc-gateway --robot-name="{ROBOT_NAME}"
+```
+
+## development
+
+### gateway (gRPC server)
 
 ```bash
 uv run python -m webots_grpc --robot-name="{ROBOT_NAME}"
@@ -25,6 +32,10 @@ uv run webots-grpc-gateway --robot-name="{ROBOT_NAME}"
 # pipx run --spec . webots-grpc-gateway --robot-name="{ROBOT_NAME}"
 # uvx --from git+https://github.com/existedinnettw/webots-grpc.git webots-grpc-gateway --robot-name="{ROBOT_NAME}"
 ```
+
+`webots-grpc-gateway` is actually a wrapper for script, `webots_grpc/server.py`. `webots-grpc-gateway` will find webots controller automatically based on `WEBOTS_HOME` and execute the script automatically.
+
+For development purpose, you can run the script though webots controller directly.
 
 #### build
 
@@ -46,6 +57,8 @@ Fix python import issue
 uv run protol --create-package --in-place --python-out ./webots_grpc/generated protoc --protoc-path "uv run python -m grpc_tools.protoc" --proto-path=./protos ./protos/*.proto
 ```
 
+##### compile executable
+
 And if want to build exe file,
 
 > [Configure additional module search paths, like PYTHONPATH #9168](https://github.com/astral-sh/uv/issues/9168)
@@ -57,7 +70,7 @@ PYTHONPATH="${WEBOTS_HOME}/lib/controller/python" uv run python -m nuitka --incl
 
 #### execution on linux
 
-> Modify your robot name plz.
+Modify your own robot name.
 
 ```bash
 export WEBOTS_HOME=/usr/local/webots
@@ -81,7 +94,7 @@ PYTHONPATH=C:\Program Files\Webots\lib\controller\python
 
 ### client
 
-There are cpp and python client API support with unittests, plz refer python test `tests/README.md` first.
+There are cpp and python client API support with unittests, plz refer python test `tests/README.md` for more information.
 
 #### PYTHON
 
