@@ -7,6 +7,8 @@ import sys
 
 from dotenv import load_dotenv
 
+from .util import find_webots_install_path
+
 """
 Usage: webots-controller [options] [controller_file] [controller_args]
 
@@ -57,17 +59,17 @@ Options:
 """
 
 
-def default_webots_home():
+def default_webots_install_path():
     if platform.system() == "Windows":
-        return os.environ.get("WEBOTS_HOME", "C:\\Program Files\\Webots")
+        return os.path.join("C:", "Program Files", "Webots")
     elif platform.system() == "Darwin":
-        return os.environ.get("WEBOTS_HOME", "/Applications/Webots.app")
+        return os.path.join("/Applications", "Webots.app")
     else:
-        # ususally linux
-        return os.environ.get("WEBOTS_HOME", "/usr/local/webots")
+        # usually linux
+        return "/usr/local/webots"
 
 
-def webots_controller_path(webots_home: str):
+def webots_controller_path(webots_home: str) -> str:
     if platform.system() == "Windows":
         return os.path.join(webots_home, "msys64", "mingw64", "bin", "webots-controller.exe")
     elif platform.system() == "Darwin":
@@ -80,7 +82,8 @@ def webots_controller_path(webots_home: str):
 def verify_webots_controller_existed(path: str) -> bool:
     if not os.path.exists(path):
         raise FileNotFoundError(
-            f"webots-controller not found at {path}. Please set WEBOTS_HOME environment variable to your Webots installation path."
+            f"webots-controller not found at {path}. Please set WEBOTS_HOME environment "
+            "variable to your Webots installation path."
         )
     return True
 
@@ -112,11 +115,22 @@ def main():
     )
     args, unknown = parser.parse_known_args()
 
-    webots_home = default_webots_home()
+    # Resolve WEBOTS_HOME with precedence:
+    # 1. Explicit environment variable
+    # 2. Auto-detected install (registry / PATH / bundle)
+    # 3. Static default fallback
+    detected_home = find_webots_install_path()
     if "WEBOTS_HOME" in os.environ:
         webots_home = os.environ["WEBOTS_HOME"]
+    elif detected_home:
+        webots_home = detected_home
+    else:
+        webots_home = default_webots_install_path()
+    # Uncomment for troubleshooting:
+    # print(f"[DEBUG] Using WEBOTS_HOME={webots_home} (detected={detected_home})")
     webots_controller = webots_controller_path(webots_home)
     verify_webots_controller_existed(webots_controller)
+
     cmd = [
         webots_controller,
         f"--protocol={args.protocol}",
@@ -129,7 +143,11 @@ def main():
     ] + unknown
     cmd = [c for c in cmd if c]  # remove empty string
     # print("[DEBUG] Running command:\n", " ".join(cmd))
-    subprocess.run(cmd)
+    # Ensure WEBOTS_HOME is set for the subprocess even if it wasn't originally
+    # present in the parent environment (or if we resolved a default).
+    env = os.environ.copy()
+    env["WEBOTS_HOME"] = webots_home
+    subprocess.run(cmd, env=env)
 
 
 if __name__ == "__main__":
