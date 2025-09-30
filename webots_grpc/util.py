@@ -93,10 +93,18 @@ def find_webots_install_path() -> str | None:
     if not candidate:
         return None
 
+    # Resolve symlinks to get actual installation root. This matters on Linux
+    # distributions where Webots may be installed under /opt/webots but only a
+    # symlink placed into /usr/local/bin or similar locations.
+    resolved = os.path.realpath(candidate)
+
     if system == "Darwin":
         token = "Webots.app"
-        if token in candidate:
-            prefix, _sep, _rest = candidate.partition(token)
+        # If the resolved path sits inside an app bundle, return the bundle root.
+        if token in resolved:
+            prefix, _sep, _rest = resolved.partition(token)
             return os.path.join(prefix, token)
+        # Fallback: just use the directory of the (possibly resolved) binary.
+        return os.path.dirname(resolved)
 
-    return os.path.dirname(candidate)
+    return os.path.dirname(resolved)
