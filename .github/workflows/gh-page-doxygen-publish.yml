@@ -1,0 +1,109 @@
+name: Publish Doxygen to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Doxygen
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            graphviz \
+            ninja-build \
+            gcc-14 \
+            g++-14 \
+            ccache
+
+      - name: Set gcc-14 and g++-14 as defaults
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 10
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 10
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ runner.os }}-ccache-docs
+          max-size: 500M
+
+      - name: Install Conan
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "conan>=2.0"
+
+      - name: Cache Conan packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.conan2
+          key: ${{ runner.os }}-conan2-release-cppstd20-gcc14-${{ hashFiles('conanfile.py') }}
+          restore-keys: |
+            ${{ runner.os }}-conan2-release-cppstd20-gcc14-
+            ${{ runner.os }}-conan2-release-
+
+      - name: Detect Conan profile
+        run: |
+          conan profile detect --force
+
+      - name: Install dependencies (Conan)
+        run: |
+          conan install . \
+            --build=missing \
+            -s build_type=Release \
+            -s compiler.cppstd=20 \
+            -s compiler.version=14 \
+            -c tools.build:skip_test=True
+
+      - name: Build (CMake + Doxygen)
+        run: |
+          conan build . \
+            -s build_type=Release \
+            -s compiler.cppstd=20 \
+            -s compiler.version=14 \
+            -c tools.build:skip_test=True
+        env:
+          CMAKE_C_COMPILER_LAUNCHER: ccache
+          CMAKE_CXX_COMPILER_LAUNCHER: ccache
+
+      - name: Verify docs output exists
+        run: |
+          test -d build/Release/html
+          test -f build/Release/html/index.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/Release/html
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

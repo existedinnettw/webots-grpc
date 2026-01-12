@@ -1,0 +1,63 @@
+name: PR unit tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: pr-unit-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  conan-create-and-test:
+    name: conan create (tests)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Conan
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "conan>=2,<3"
+          conan --version
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            graphviz \
+            ninja-build \
+            gcc-14 \
+            g++-14
+
+      - name: Set gcc-14 and g++-14 as defaults
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 10
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 10
+
+      - name: Cache Conan home
+        uses: actions/cache@v5
+        with:
+          path: ~/.conan2
+          key: ${{ runner.os }}-conan2-cppstd20-gcc14-${{ hashFiles('conanfile.py') }}
+          restore-keys: |
+            ${{ runner.os }}-conan2-cppstd20-gcc14-
+            ${{ runner.os }}-conan2-
+
+      - name: Detect Conan profile
+        run: conan profile detect --force
+
+      - name: Build + run unit tests + create package
+        run: |
+          conan create . \
+            --build=missing \
+            -s compiler.cppstd=20 \
+            -s compiler.version=14

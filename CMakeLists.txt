@@ -6,6 +6,8 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif ()
 
+option(BUILD_DOC "if build documentation or not." ON)
+
 find_package(Protobuf CONFIG REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
 
@@ -50,3 +52,46 @@ install(
 install(TARGETS webots-grpc-proto)
 
 add_subdirectory(src)
+
+if (BUILD_DOC)
+    find_package(Doxygen REQUIRED dot OPTIONAL_COMPONENTS mscgen dia)
+
+    set(DOXYGEN_CALL_GRAPH YES)
+    set(DOXYGEN_CALLER_GRAPH YES)
+    set(DOXYGEN_DIRECTORY_GRAPH YES)
+    set(DOXYGEN_GENERATE_TREEVIEW YES)
+    set(DOXYGEN_EXTRACT_ALL YES)
+    set(DOXYGEN_EXTRACT_PRIVATE YES)
+    set(DOXYGEN_EXTRACT_STATIC YES)
+    set(DOXYGEN_MACRO_EXPANSION YES)
+    set(DOXYGEN_USE_MDFILE_AS_MAINPAGE README.md)
+    set(DOXYGEN_EXAMPLE_PATH example/)
+    set(DOXYGEN_EXAMPLE_RECURSIVE YES)
+    set(DOXYGEN_DOT_IMAGE_FORMAT svg)
+    set(DOXYGEN_INTERACTIVE_SVG YES)
+    set(DOXYGEN_MARKDOWN_SUPPORT YES)
+    set(DOXYGEN_USE_MATHJAX YES)
+    set(DOXYGEN_UML_LOOK YES)
+    set(DOXYGEN_CLASS_GRAPH YES) # successor of CLASS_DIAGRAMS
+    set(DOXYGEN_TEMPLATE_RELATIONS YES)
+    set(DOXYGEN_RECURSIVE YES)
+    # prevent source code seen in doc
+    # set(DOXYGEN_SOURCE_BROWSER NO)
+    # set(DOXYGEN_INLINE_SOURCES NO)
+    # set(DOXYGEN_VERBATIM_HEADERS NO)
+
+    # set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+
+    # Create a documentation target named 'docs'
+    doxygen_add_docs(
+        webots_grpc_docs
+        # <files-or-dirs>...
+        # include/
+        src/
+        docs/
+        # examples/
+        tests/
+        README.md
+        ALL
+        COMMENT "Generate document by doxygen.")
+endif ()
