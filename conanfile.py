@@ -6,7 +6,6 @@ from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
 
 class webots_grpcRecipe(ConanFile):
     name = "webots-grpc"
-    version = "0.1.3"
     package_type = "library"
 
     # Optional metadata
@@ -29,7 +28,7 @@ class webots_grpcRecipe(ConanFile):
     exports_sources = "CMakeLists.txt", "src/*", "protos/*"
 
     def set_version(self):
-        self.version = self.version or "0.1.3"
+        self.version = self.version or "0.1.4"
 
     def validate(self):
         check_min_cppstd(self, "20")  # grpc
