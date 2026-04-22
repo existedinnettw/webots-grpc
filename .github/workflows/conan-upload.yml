@@ -1,0 +1,107 @@
+name: Conan Upload
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      CONAN_REMOTE_URL: ${{ secrets.CONAN_REMOTE_URL }}
+      CONAN_LOGIN_USERNAME: ${{ secrets.CONAN_LOGIN_USERNAME }}
+      CONAN_PASSWORD: ${{ secrets.CONAN_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install host build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            gcc-14 \
+            g++-14 \
+            cmake \
+            ninja-build \
+            graphviz \
+            crudini
+
+      - name: Set gcc-14 as default
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 10
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 10
+
+      - name: Setup Conan client
+        uses: conan-io/setup-conan@v1
+        with:
+          version: "2.*"
+          use_venv: true
+
+      - name: Validate required Conan secrets
+        run: |
+          test -n "$CONAN_REMOTE_URL" || (echo "Missing secret: CONAN_REMOTE_URL" && exit 1)
+          test -n "$CONAN_LOGIN_USERNAME" || (echo "Missing secret: CONAN_LOGIN_USERNAME" && exit 1)
+          test -n "$CONAN_PASSWORD" || (echo "Missing secret: CONAN_PASSWORD" && exit 1)
+
+      - name: Resolve tag and package version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${{ github.event.release.tag_name }}"
+          fi
+          test -n "$TAG" || (echo "Unable to determine release tag" && exit 1)
+          VERSION="${TAG#v}"
+          test -n "$VERSION" || (echo "Unable to derive package version from tag: $TAG" && exit 1)
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Validate tag base version vs recipe base version
+        run: |
+          conan profile detect --force
+          crudini --set ~/.conan2/profiles/default settings compiler.cppstd 20
+          RECIPE_VERSION="$(conan inspect . --format=json | python3 -c 'import json,sys; print(json.load(sys.stdin).get("version",""))')"
+          test -n "$RECIPE_VERSION" || (echo "Recipe version is empty" && exit 1)
+          TAG_BASE="$(echo "${{ steps.version.outputs.version }}" | sed -E 's/[+-].*$//')"
+          RECIPE_BASE="$(echo "$RECIPE_VERSION" | sed -E 's/[+-].*$//')"
+          if [ "$TAG_BASE" != "$RECIPE_BASE" ]; then
+            echo "Tag base version (${TAG_BASE}) does not match recipe base version (${RECIPE_BASE})."
+            echo "Tag: ${{ steps.version.outputs.tag }} Recipe: $RECIPE_VERSION"
+            exit 1
+          fi
+
+      - name: Restore Conan cache
+        id: conan-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan2
+          key: ${{ runner.os }}-conan2-cppstd20-gcc14-${{ hashFiles('conanfile.py') }}
+          restore-keys: |
+            ${{ runner.os }}-conan2-cppstd20-gcc14-upload-
+            ${{ runner.os }}-conan2-cppstd20-gcc14-
+            ${{ runner.os }}-conan2-cppstd20-
+
+      - name: Login private Conan remote
+        run: |
+          conan remote add org "$CONAN_REMOTE_URL" --force
+          conan remote login org "$CONAN_LOGIN_USERNAME" --password "$CONAN_PASSWORD"
+          conan remote list
+
+      - name: Create package from release tag
+        run: |
+          conan create . --version="${{ steps.version.outputs.version }}" --build=missing -s compiler.version=14
+          conan list "webots-grpc/${{ steps.version.outputs.version }}*"
+
+      - name: Upload package and binaries
+        run: conan upload "webots-grpc/${{ steps.version.outputs.version }}:*" --remote org --confirm
+
+      - name: Prune Conan cache before save
+        if: steps.conan-cache.outputs.cache-hit != 'true'
+        # actions/cache@v4 saves cache in its post-job hook when this job succeeds.
+        # Prune first so the persisted ~/.conan2 is smaller and excludes temp/build/source artifacts.
+        run: conan cache clean "*" --source --build --download --temp

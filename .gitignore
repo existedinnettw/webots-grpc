@@ -177,3 +177,12 @@ tests/worlds/.linear_motor.jpg
 *.exe
 *.build/
 *.dist/
+
+/.*
+!/.gitignore
+!/.gitattributes
+!/.taplo.toml
+!/.github
+!/.vscode
+/.env*
+!/.env*.example

@@ -1,63 +1,78 @@
-name: PR unit tests
+name: C++ Conan CI
 
 on:
+  push:
+    branches: [main]
   pull_request:
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
-  group: pr-unit-tests-${{ github.ref }}
+  group: cpp-conan-ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  conan-create-and-test:
-    name: conan create (tests)
-    runs-on: ubuntu-24.04
-    timeout-minutes: 45
-
+  conan-create:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CONAN_REMOTE_URL: ${{ secrets.CONAN_REMOTE_URL }}
+      CONAN_LOGIN_USERNAME: ${{ secrets.CONAN_LOGIN_USERNAME }}
+      CONAN_PASSWORD: ${{ secrets.CONAN_PASSWORD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-
-      - name: Install Conan
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install "conan>=2,<3"
-          conan --version
-
-      - name: Install system packages
+      - name: Install host build tools
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            graphviz \
-            ninja-build \
+            build-essential \
             gcc-14 \
-            g++-14
+            g++-14 \
+            cmake \
+            ninja-build \
+            graphviz \
+            crudini
 
-      - name: Set gcc-14 and g++-14 as defaults
+      - name: Set gcc-14 as default
         run: |
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 10
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 10
 
-      - name: Cache Conan home
-        uses: actions/cache@v5
+      - name: Setup Conan client
+        uses: conan-io/setup-conan@v1
+        with:
+          version: "2.*"
+          use_venv: true
+
+      - name: Detect Conan profile
+        run: |
+          conan profile detect --force
+          crudini --set ~/.conan2/profiles/default settings compiler.cppstd 20
+
+      - name: Restore Conan cache
+        id: conan-cache
+        uses: actions/cache@v4
         with:
           path: ~/.conan2
           key: ${{ runner.os }}-conan2-cppstd20-gcc14-${{ hashFiles('conanfile.py') }}
           restore-keys: |
             ${{ runner.os }}-conan2-cppstd20-gcc14-
-            ${{ runner.os }}-conan2-
+            ${{ runner.os }}-conan2-cppstd20-
 
-      - name: Detect Conan profile
-        run: conan profile detect --force
-
-      - name: Build + run unit tests + create package
+      - name: Login private Conan remote (optional)
+        if: env.CONAN_REMOTE_URL != '' && env.CONAN_LOGIN_USERNAME != '' && env.CONAN_PASSWORD != ''
         run: |
-          conan create . \
-            --build=missing \
-            -s compiler.cppstd=20 \
-            -s compiler.version=14
+          conan remote add org "$CONAN_REMOTE_URL" --force
+          conan remote login org "$CONAN_LOGIN_USERNAME" --password "$CONAN_PASSWORD"
+          conan remote list
+
+      - name: Build and test package
+        run: conan create . --build=missing -s compiler.version=14
+
+      - name: Prune Conan cache before save
+        if: steps.conan-cache.outputs.cache-hit != 'true'
+        # actions/cache@v4 saves cache in its post-job hook when this job succeeds.
+        # Prune first so the persisted ~/.conan2 is smaller and excludes temp/build/source artifacts.
+        run: conan cache clean "*" --source --build --download --temp

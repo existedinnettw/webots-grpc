@@ -34,19 +34,13 @@ jobs:
             graphviz \
             ninja-build \
             gcc-14 \
-            g++-14 \
-            ccache
+            g++-14\
+            crudini
 
       - name: Set gcc-14 and g++-14 as defaults
         run: |
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 10
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 10
-
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: ${{ runner.os }}-ccache-docs
-          max-size: 500M
 
       - name: Install Conan
         run: |
@@ -82,9 +76,6 @@ jobs:
             -s compiler.cppstd=20 \
             -s compiler.version=14 \
             -c tools.build:skip_test=True
-        env:
-          CMAKE_C_COMPILER_LAUNCHER: ccache
-          CMAKE_CXX_COMPILER_LAUNCHER: ccache
 
       - name: Verify docs output exists
         run: |
@@ -95,6 +86,12 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with:
           path: build/Release/html
+
+      - name: Prune Conan cache before save
+        if: steps.conan-cache.outputs.cache-hit != 'true'
+        # actions/cache@v4 saves cache in its post-job hook when this job succeeds.
+        # Prune first so the persisted ~/.conan2 is smaller and excludes temp/build/source artifacts.
+        run: conan cache clean "*" --source --build --download --temp
 
   deploy:
     name: Deploy to GitHub Pages

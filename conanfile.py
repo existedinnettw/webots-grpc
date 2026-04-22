@@ -28,6 +28,9 @@ class webots_grpcRecipe(ConanFile):
     # Sources are located in the same place as this recipe, copy them to the recipe
     exports_sources = "CMakeLists.txt", "src/*", "protos/*"
 
+    def set_version(self):
+        self.version = self.version or "0.1.3"
+
     def validate(self):
         check_min_cppstd(self, "20")  # grpc
 
