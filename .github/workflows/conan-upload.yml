@@ -16,7 +16,7 @@ jobs:
       CONAN_PASSWORD: ${{ secrets.CONAN_PASSWORD }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install host build tools
         run: |
