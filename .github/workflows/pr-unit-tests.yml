@@ -53,7 +53,7 @@ jobs:
 
       - name: Restore Conan cache
         id: conan-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.conan2
           key: ${{ runner.os }}-conan2-cppstd20-gcc14-${{ hashFiles('conanfile.py') }}
@@ -73,6 +73,6 @@ jobs:
 
       - name: Prune Conan cache before save
         if: steps.conan-cache.outputs.cache-hit != 'true'
-        # actions/cache@v4 saves cache in its post-job hook when this job succeeds.
+        # actions/cache@v5 saves cache in its post-job hook when this job succeeds.
         # Prune first so the persisted ~/.conan2 is smaller and excludes temp/build/source artifacts.
         run: conan cache clean "*" --source --build --download --temp

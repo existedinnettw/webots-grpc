@@ -45,7 +45,7 @@ class webots_grpcRecipe(ConanFile):
         # Fix for gRPC metric name registration issue - set secure=True
         # See: https://github.com/conan-io/conan-center-index/issues/25107
         self.requires(
-            "grpc/1.72.0",
+            "grpc/1.78.1",
             options={"secure": True},
             transitive_headers=True,
             transitive_libs=True,
@@ -57,7 +57,7 @@ class webots_grpcRecipe(ConanFile):
         # protoc compiler needs to run on host architecture during cross-compilation
         self.tool_requires("protobuf/[>=5.27.0]")
         # grpc_cpp_plugin needs to run on host architecture during cross-compilation
-        self.tool_requires("grpc/1.72.0", options={"secure": True})
+        self.tool_requires("grpc/1.78.1", options={"secure": True})
         self.tool_requires("doxygen/[>=1.15]")
 
         # test
