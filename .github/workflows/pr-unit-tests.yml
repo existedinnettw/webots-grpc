@@ -46,20 +46,31 @@ jobs:
           version: "2.*"
           use_venv: true
 
-      - name: Detect Conan profile
+      - name: Set Conan profile
         run: |
           conan profile detect --force
-          crudini --set ~/.conan2/profiles/default settings compiler.cppstd 20
+          crudini --set "$HOME/.conan2/profiles/default" settings compiler.cppstd 20
+          crudini --set "$HOME/.conan2/profiles/default" settings compiler.version 14
+          conan profile show --profile:host=default --profile:build=default
 
+      - name: Compute Conan cache key
+        id: conan-cache-key
+        run: |
+          # Hash the recipe together with the effective profile so a toolchain or
+          # settings change (compiler version, cppstd, libcxx, runner image) gets its own key.
+          echo "key=$(cat conanfile.py "$HOME/.conan2/profiles/default" | sha256sum | cut -c1-32)" >> "$GITHUB_OUTPUT"
+
+      # Only ~/.conan2/p (package storage + its cache.sqlite3 index) is cached.
+      # Caching the whole ~/.conan2 would also persist profiles, remotes.json and
+      # .conan.db, which stores the private remote login token.
       - name: Restore Conan cache
         id: conan-cache
-        uses: actions/cache@v6
+        uses: actions/cache/restore@v6
         with:
-          path: ~/.conan2
-          key: ${{ runner.os }}-conan2-cppstd20-gcc14-${{ hashFiles('conanfile.py') }}
+          path: ~/.conan2/p
+          key: ${{ runner.os }}-conan2-${{ steps.conan-cache-key.outputs.key }}
           restore-keys: |
-            ${{ runner.os }}-conan2-cppstd20-gcc14-
-            ${{ runner.os }}-conan2-cppstd20-
+            ${{ runner.os }}-conan2-
 
       - name: Login private Conan remote (optional)
         if: env.CONAN_REMOTE_URL != '' && env.CONAN_LOGIN_USERNAME != '' && env.CONAN_PASSWORD != ''
@@ -68,11 +79,25 @@ jobs:
           conan remote login org "$CONAN_LOGIN_USERNAME" --password "$CONAN_PASSWORD"
           conan remote list
 
-      - name: Build and test package
-        run: conan create . --build=missing -s compiler.version=14
+      - name: Install dependencies
+        run: conan install . --build=missing
 
       - name: Prune Conan cache before save
         if: steps.conan-cache.outputs.cache-hit != 'true'
-        # actions/cache@v6 saves cache in its post-job hook when this job succeeds.
-        # Prune first so the persisted ~/.conan2 is smaller and excludes temp/build/source artifacts.
-        run: conan cache clean "*" --source --build --download --temp
+        run: |
+          # Drop packages unused for 4 weeks (stale leftovers from restore-key fallbacks),
+          # then remove source/build/download/temp folders so only built binaries persist.
+          conan remove "*" --lru=4w --confirm
+          conan cache clean "*" --source --build --download --temp
+
+      # Saved right after dependencies are built, so a failing build/test of this
+      # package does not throw away the expensive dependency build.
+      - name: Save Conan cache
+        if: steps.conan-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.conan2/p
+          key: ${{ steps.conan-cache.outputs.cache-primary-key }}
+
+      - name: Build and test package
+        run: conan create . --build=missing

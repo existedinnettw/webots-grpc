@@ -22,11 +22,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Setup Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: "3.12"
-
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -34,7 +29,7 @@ jobs:
             graphviz \
             ninja-build \
             gcc-14 \
-            g++-14\
+            g++-14 \
             crudini
 
       - name: Set gcc-14 and g++-14 as defaults
@@ -42,40 +37,60 @@ jobs:
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 10
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 10
 
-      - name: Install Conan
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install "conan>=2.0"
-
-      - name: Cache Conan packages
-        uses: actions/cache@v6
+      - name: Setup Conan client
+        uses: conan-io/setup-conan@v1
         with:
-          path: ~/.conan2
-          key: ${{ runner.os }}-conan2-release-cppstd20-gcc14-${{ hashFiles('conanfile.py') }}
-          restore-keys: |
-            ${{ runner.os }}-conan2-release-cppstd20-gcc14-
-            ${{ runner.os }}-conan2-release-
+          version: "2.*"
+          use_venv: true
 
-      - name: Detect Conan profile
+      - name: Set Conan profile
         run: |
           conan profile detect --force
+          crudini --set "$HOME/.conan2/profiles/default" settings compiler.cppstd 20
+          crudini --set "$HOME/.conan2/profiles/default" settings compiler.version 14
+          conan profile show --profile:host=default --profile:build=default
+
+      - name: Compute Conan cache key
+        id: conan-cache-key
+        run: |
+          # Hash the recipe together with the effective profile so a toolchain or
+          # settings change (compiler version, cppstd, libcxx, runner image) gets its own key.
+          echo "key=$(cat conanfile.py "$HOME/.conan2/profiles/default" | sha256sum | cut -c1-32)" >> "$GITHUB_OUTPUT"
+
+      # Only ~/.conan2/p (package storage + its cache.sqlite3 index) is cached.
+      # Caching the whole ~/.conan2 would also persist profiles, remotes.json and
+      # .conan.db, which stores the private remote login token.
+      - name: Restore Conan cache
+        id: conan-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/.conan2/p
+          key: ${{ runner.os }}-conan2-${{ steps.conan-cache-key.outputs.key }}
+          restore-keys: |
+            ${{ runner.os }}-conan2-
 
       - name: Install dependencies (Conan)
+        run: conan install . --build=missing -c tools.build:skip_test=True
+
+      - name: Prune Conan cache before save
+        if: steps.conan-cache.outputs.cache-hit != 'true'
         run: |
-          conan install . \
-            --build=missing \
-            -s build_type=Release \
-            -s compiler.cppstd=20 \
-            -s compiler.version=14 \
-            -c tools.build:skip_test=True
+          # Drop packages unused for 4 weeks (stale leftovers from restore-key fallbacks),
+          # then remove source/build/download/temp folders so only built binaries persist.
+          conan remove "*" --lru=4w --confirm
+          conan cache clean "*" --source --build --download --temp
+
+      # Saved right after dependencies are built, so a failing build/test of this
+      # package does not throw away the expensive dependency build.
+      - name: Save Conan cache
+        if: steps.conan-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.conan2/p
+          key: ${{ steps.conan-cache.outputs.cache-primary-key }}
 
       - name: Build (CMake + Doxygen)
-        run: |
-          conan build . \
-            -s build_type=Release \
-            -s compiler.cppstd=20 \
-            -s compiler.version=14 \
-            -c tools.build:skip_test=True
+        run: conan build . -c tools.build:skip_test=True
 
       - name: Verify docs output exists
         run: |
@@ -86,12 +101,6 @@ jobs:
         uses: actions/upload-pages-artifact@v5
         with:
           path: build/Release/html
-
-      - name: Prune Conan cache before save
-        if: steps.conan-cache.outputs.cache-hit != 'true'
-        # actions/cache@v4 saves cache in its post-job hook when this job succeeds.
-        # Prune first so the persisted ~/.conan2 is smaller and excludes temp/build/source artifacts.
-        run: conan cache clean "*" --source --build --download --temp
 
   deploy:
     name: Deploy to GitHub Pages
